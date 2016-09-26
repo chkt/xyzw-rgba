@@ -10,7 +10,7 @@ $ npm install xyzw-rgba
 
 ###Use
 
-xyzw-rgba is an extension of [xyzw](https://github.com/xyzw) providing
+xyzw-rgba is an extension of [xyzw](https://github.com/chkt/xyzw) providing
 methods to easily work with colors and convert them from and to common color formats.
 
 ```js
