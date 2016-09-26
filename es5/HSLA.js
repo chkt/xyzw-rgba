@@ -22,13 +22,35 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var RAD_TO_DEG = 180.0 / _Math2.default.PI;
+
+var ONE_THIRD_PI = 1.0 / 3.0 * _Math2.default.PI;
+var PI_DIV_THREE = 3.0 / _Math2.default.PI;
+
 /**
  * HSLA color model transform
  */
+
 var HSLA = function () {
 	_createClass(HSLA, null, [{
-		key: 'RGBA',
+		key: 'Define',
 
+
+		/**
+   * Returns a defined instance
+   * @constructor
+   * @param {Number} h - The hue in radians
+   * @param {Number} s - The saturation
+   * @param {Number} l - The luminosity
+   * @param {Number} a - The alpha
+   * @param {HSLA} [target] - The target instance
+   * @returns {HSLA}
+   */
+		value: function Define(h, s, l, a, target) {
+			if (target === undefined) target = new this(h, s, l, a);else this.call(target, h, s, l, a);
+
+			return this;
+		}
 
 		/**
    * Returns an instance representing v
@@ -37,6 +59,9 @@ var HSLA = function () {
    * @param {HSLA} [target] - The target instance
    * @returns {HSLA}
    */
+
+	}, {
+		key: 'RGBA',
 		value: function RGBA(v, target) {
 			var r = v.n[0],
 			    g = v.n[1],
@@ -52,12 +77,12 @@ var HSLA = function () {
 
 			if (c === 0.0) h = 0.0;else if (min === r) h = (g - b) / c % 6.0;else if (min === g) h = (b - r) / c + 2.0;else h = (r - g) / c + 4.0;
 
-			h *= 1.0 / 3.0 * _Math2.default.PI;
+			h *= ONE_THIRD_PI;
 			l = 0.5 * (max + min);
 
 			if (c === 0.0) s = 0.0;else s = c / (1.0 - _Math2.default.abs(2.0 * l - 1.0));
 
-			if (target === undefined) return new HSLA(h, s, l, v.n[3]);else return target.define(h, s, l, v.n[3]);
+			return this.Define(h, s, l, v.n[3], target);
 		}
 
 		/**
@@ -84,7 +109,7 @@ var HSLA = function () {
 	}, {
 		key: 'Copy',
 		value: function Copy(source, target) {
-			if (target === undefined) return new HSLA(source.h, source.s, source.l, source.a);else return target.define(source.h, source.s, source.l, source.a);
+			return this.Define(source.h, source.s, source.l, source.a, target);
 		}
 
 		/**
@@ -104,7 +129,7 @@ var HSLA = function () {
    * Creates a new instance
    * @param {Float} h - The hue in radians
    * @param {Float} s - The saturation
-   * @param {Float} l - The lightness
+   * @param {Float} l - The luminosity
    * @param {Float} a - The alpha
    */
 
@@ -113,9 +138,25 @@ var HSLA = function () {
 	function HSLA(h, s, l, a) {
 		_classCallCheck(this, HSLA);
 
+		/**
+   * The hue
+   * @type {Float}
+   */
 		this.h = h;
+		/**
+   * The saturation
+   * @type {Float}
+   */
 		this.s = s;
+		/**
+   * The luminosity
+   * @type {Float}
+   */
 		this.l = l;
+		/**
+   * The alpha
+   * @type {Float}
+   */
 		this.a = a;
 	}
 
@@ -123,7 +164,7 @@ var HSLA = function () {
   * Redefines the instance
   * @param {Float} h - The hue in radians
   * @param {Float} s - The saturation
-  * @param {Float} l - The lightness
+  * @param {Float} l - The luminosity
   * @param {Float} a - The alpha
   * @returns {HSLA}
   */
@@ -170,7 +211,7 @@ var HSLA = function () {
 		key: 'toRGBA',
 		value: function toRGBA(target) {
 			var c = this.chroma;
-			var h = this.h / (1.0 / 3.0 * _Math2.default.PI);
+			var h = this.h * PI_DIV_THREE;
 			var x = c * (1.0 - _Math2.default.abs(h % 2.0 - 1.0));
 
 			var r = void 0,
@@ -214,9 +255,9 @@ var HSLA = function () {
 	}, {
 		key: 'toCSS',
 		value: function toCSS() {
-			var hsl = _Math2.default.round(this.h * (180.0 / _Math2.default.PI)) + "," + _Math2.default.round(this.s * 100.0) + "%," + _Math2.default.round(this.l * 100.0) + "%";
+			var hsl = _Math2.default.round(this.h * RAD_TO_DEG) + ',' + _Math2.default.round(this.s * 100.0) + '%,' + _Math2.default.round(this.l * 100.0) + '%';
 
-			if (this.a === 1.0) return 'hsl(' + hsl + ')';else return 'hsla(' + hsl + ',' + this.a.toString() + ')';
+			if (this.a === 1.0) return 'hsl(' + hsl + ')';else return 'hsla(' + hsl + ',' + this.a.toFixed(4) + ')';
 		}
 
 		/**
@@ -230,7 +271,7 @@ var HSLA = function () {
 		value: function toString() {
 			var digits = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
 
-			return "[HSLA]" + this.h.toFixed(digits) + " " + this.s.toFixed(digits) + " " + this.l.toFixed(digits) + " " + this.a.toFixed(digits);
+			return '[HSLA](' + this.h.toFixed(digits) + ',' + this.s.toFixed(digits) + ',' + this.l.toFixed(digits) + ',' + this.a.toFixed(digits) + ')';
 		}
 	}, {
 		key: 'chroma',
