@@ -1,5 +1,5 @@
-import Math from './Math';
-import Vector4 from './Vector4';
+import Math from 'xyzw/es5/Math';
+import Vector4 from 'xyzw/es5/Vector4';
 
 
 
