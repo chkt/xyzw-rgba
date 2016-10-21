@@ -167,3 +167,75 @@ describe('parse', () => {
 		], first => parse.parse(first));
 	});
 });
+
+describe('stringify', () => {
+	it("should return a #rrggbb string", () => {
+		const hash = parse.stringify({
+			type : 'rgb',
+			components : [15, 15, 15, 1.0]
+		});
+
+		assert.strictEqual(hash, '#0f0f0f');
+	});
+
+	it("should return a #rgb string", () => {
+		const hash = parse.stringify({
+			type : 'rgb',
+			components : [17, 17, 17, 1.0]
+		});
+
+		assert.strictEqual(hash, '#111');
+	});
+
+	it("should return a color id string if the name is shorter than its hash representation", () => {
+		let id = parse.stringify({
+			type : 'rgb',
+			components : [0, 0, 0, 1.0]
+		});
+
+		assert.strictEqual(id, '#000');
+
+		id = parse.stringify({
+			type : 'rgb',
+			components : [255, 0, 0, 1.0]
+		});
+
+		assert.strictEqual(id, 'red');
+	});
+
+	it("should return a rgba() string", () => {
+		const rgba = parse.stringify({
+			type : 'rgb',
+			components: [1, 1, 1, 0]
+		});
+
+		assert.strictEqual(rgba, 'rgba(1,1,1,0)');
+	});
+
+	it("should return the 'transparent' string for a transparent black", () => {
+		const transparent = parse.stringify({
+			type : 'rgb',
+			components : [0, 0, 0, 0.0]
+		});
+
+		assert.strictEqual(transparent, 'transparent');
+	});
+
+	it("should return a hsl() string", () => {
+		const hsl = parse.stringify({
+			type : 'hsl',
+			components : [0, 0, 0, 1.0]
+		});
+
+		assert.strictEqual(hsl, 'hsl(0,0%,0%)');
+	});
+
+	it("should return a hsla() string", () => {
+		const hsla = parse.stringify({
+			type : 'hsl',
+			components : [0, 0, 0, 0]
+		});
+
+		assert.strictEqual(hsla, 'hsla(0,0%,0%,0)');
+	});
+});
