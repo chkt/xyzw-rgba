@@ -58,6 +58,35 @@ function hslTraverseSegment(hue, saturation, luminosity, from, to) {
 	}
 }
 
+function rgbTransitionLuminosity(from, to, hue, saturation, luminosity) {
+	for (let f = 0.0; f <= 1.0; f += 0.08) {
+		const rgb = [
+			Math.mix(from[0], to[0], f),
+			Math.mix(from[1], to[1], f),
+			Math.mix(from[2], to[2], f)
+		];
+
+		const sum = rgb.reduce((current, next) => current + next);
+		const singularity = (sum === 0.0 || sum === 3.0);
+		const hsl = trn.rgbToHsl(rgb);
+
+		assert(
+			Math.abs(hsl[0] - (singularity ? 0 : hue) < 1.0e-12),
+			`hue for rgb(${ rgb.join(",") }) was ${ hsl[0] }, expected ${ singularity ? 0 : hue }`
+		);
+
+		assert(
+			Math.abs(hsl[1] - (singularity ? 0 : saturation)) < 1.0e-12,
+			`saturation for rgb(${ rgb.join(",") }) was ${ hsl[1] }, expected ${ singularity ? 0 : saturation }`
+		);
+
+		assert(
+			Math.abs(hsl[2] - (luminosity + f * 0.5)) < 1.0e-12,
+			`luminosity for rgb(${ rgb.join(",") }) was ${ hsl[2] }, expected ${ luminosity + f * 0.5 }`
+		);
+	}
+}
+
 
 describe('hslToRgb', () => {
 	it("should return [0,0,0] when luminosity is 0", () => {
@@ -122,5 +151,26 @@ describe('hslToRgb', () => {
 		hslTraverseSegment(HUE_BLUE, 1, 0.5, [0,0,1], [1,1,1]);
 		hslTraverseSegment(HUE_MAGENTA, 1, 0, [0,0,0], [1,0,1]);
 		hslTraverseSegment(HUE_MAGENTA, 1, 0.5, [1,0,1], [1,1,1]);
+	});
+});
+
+describe('rgbToHsl', () => {
+	it("should return [0,0,r=g=b] for grays", () => {
+		for (let f = 0; f <= 1.0; f += 0.08) assert.deepStrictEqual(trn.rgbToHsl([f,f,f]), [0,0,f]);
+	});
+
+	it("should return [h,1,l] for saturated colors", () => {
+		rgbTransitionLuminosity([0,0,0], [1,0,0], HUE_RED, 1, 0);
+		rgbTransitionLuminosity([1,0,0], [1,1,1], HUE_RED, 1, 0.5);
+		rgbTransitionLuminosity([0,0,0], [1,1,0], HUE_YELLOW, 1, 0);
+		rgbTransitionLuminosity([1,1,0], [1,1,1], HUE_YELLOW, 1, 0.5);
+		rgbTransitionLuminosity([0,0,0], [0,1,0], HUE_GREEN, 1, 0);
+		rgbTransitionLuminosity([0,1,0], [1,1,1], HUE_GREEN, 1, 0.5);
+		rgbTransitionLuminosity([0,0,0], [0,1,1], HUE_CYAN, 1, 0);
+		rgbTransitionLuminosity([0,1,1], [1,1,1], HUE_CYAN, 1, 0.5);
+		rgbTransitionLuminosity([0,0,0], [0,0,1], HUE_BLUE, 1, 0);
+		rgbTransitionLuminosity([0,0,1], [1,1,1], HUE_BLUE, 1, 0.5);
+		rgbTransitionLuminosity([0,0,0], [1,0,1], HUE_MAGENTA, 1, 0);
+		rgbTransitionLuminosity([1,0,1], [1,1,1], HUE_MAGENTA, 1, 0.5);
 	});
 });
