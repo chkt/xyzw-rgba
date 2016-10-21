@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import { describe, it } from 'mocha';
 import useWith, * as use from 'tesa';
 
@@ -14,7 +16,16 @@ function invalid(value) {
 
 
 
-describe('parseCss', () => {
+describe('parse', () => {
+	it("should accept the 'transparent' string", () => {
+		const color = parse.parse('transparent');
+
+		assert.deepEqual(color, {
+			type : 'rgb',
+			components : [0, 0, 0, 0]
+		});
+	});
+
 	it("should accept a rgb() formated string", () => {
 		useWith([
 			'rgb(0,0,0)',
