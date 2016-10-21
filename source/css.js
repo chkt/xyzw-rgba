@@ -46,6 +46,16 @@ const ALIAS_STR = [
 ];
 
 
+/**
+ * Returns the descriptor representing type, c0, c1, c2 and alpha
+ * @private
+ * @param {string} type - The color model type
+ * @param {int} c0 - The first color component
+ * @param {int} c1 - The second color component
+ * @param {int} c2 - The third color component
+ * @param {number} alpha - The alpha component
+ * @returns {Object}
+ */
 function _getDescriptor(type, c0, c1, c2, alpha = 1.0) {
 	return {
 		type,
@@ -58,6 +68,13 @@ function _getDescriptor(type, c0, c1, c2, alpha = 1.0) {
 	};
 }
 
+
+/**
+ * Returns the color component representation of hash
+ * @private
+ * @param {string} hash - the hash encoded color
+ * @returns {number[]}
+ */
 function _parseHash(hash) {
 	const segs = hash.split('');
 
@@ -75,6 +92,12 @@ function _parseHash(hash) {
 	];
 }
 
+/**
+ * Returns the hash representation of rgb
+ * @private
+ * @param {int[]} rgb - The components
+ * @returns {string}
+ */
 function _stringifyHash(rgb) {
 	let res = '', short = true;
 
@@ -92,6 +115,16 @@ function _stringifyHash(rgb) {
 }
 
 
+/**
+ * Returns the hsl() or hsla() representation of h, s, l, a
+ * @private
+ * @param {number[]} [h, s, l, a] - The color components
+ * @returns {string}
+ * @throws {TypeError} if h is not an integer between 0 and 360
+ * @throws {TypeError} if s is not an integer between 0 and 100
+ * @throws {TypeError} if l is not an integer between 0 and 100
+ * @throws {TypeError} if a is not a number between 0 and 1
+ */
 function _stringifyHSL([h, s, l, a]) {
 	if (
 		!Number.isSafeInteger(h) || h < 0 || h > 360 ||
@@ -105,6 +138,16 @@ function _stringifyHSL([h, s, l, a]) {
 	return a === 1.0 ? `hsl(${ hsl })` : `hsla(${ hsl },${ a })`;
 }
 
+/**
+ * Returns the #rrggbb or rgba() representation of r, g, b, a
+ * @private
+ * @param {number[]} [r, g, b, a] - the color components
+ * @returns {string}
+ * @throws {TypeError} if r is not an integer between 0 and 255
+ * @throws {TypeError} if g is not an integer between 0 and 255
+ * @throws {TypeError} if b is not an integer between 0 and 255
+ * @throws {TypeError} if a is not a number between 0 and 1
+ */
 function _stringifyRGB([r, g, b, a]) {
 	if (
 		!Number.isSafeInteger(r) || r < 0 || r > 255 ||
@@ -147,6 +190,12 @@ export function resetAliases() {
 }
 
 
+/**
+ * Returns the component descriptor representing css
+ * @param {string} css - The color
+ * @returns {Object}
+ * @throws {TypeError} if css is not a valid css color
+ */
 export function parse(css) {
 	if (typeof css !== 'string') throw new Error();
 
@@ -169,6 +218,15 @@ export function parse(css) {
 	throw new Error();
 }
 
+/**
+ * Returns the shortest css string representing the color descriptor
+ * @param {Object} descriptor
+ * @param {string} descriptor.type - The color model type
+ * @param {number[]} descriptor.components - The color components
+ * @returns {string}
+ * @throws {TypeError} if descriptor.type is not a valid color model type
+ * @throws {TypeError} if descriptor.components is not an array
+ */
 export function stringify({ type, components }) {
 	if (
 		type !== 'rgb' && type !== 'hsl' ||
