@@ -16,7 +16,7 @@ function invalid(value) {
 
 
 
-describe('css', () => {
+describe('parse', () => {
 	it("should accept the 'transparent' string", () => {
 		const color = css.parse('transparent');
 
