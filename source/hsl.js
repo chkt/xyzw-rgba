@@ -3,11 +3,22 @@ const THREE_DIV_PI = 3.0 / Math.PI;
 
 
 
+/**
+ * Returns the chroma of s and l
+ * @param {number} s - The saturation
+ * @param {number} l - The luminosity
+ * @returns {number}
+ */
 export function chroma(s, l) {
 	return (1.0 - Math.abs(2.0 * l - 1.0)) * s;
 }
 
 
+/**
+ * Returns the [r,g,b] representation of [h,s,l]
+ * @param {number[]} hsl - The hsl components
+ * @returns {number[]}
+ */
 export function hslToRgb([h, s, l]) {
 	h *= THREE_DIV_PI;
 
@@ -32,6 +43,11 @@ export function hslToRgb([h, s, l]) {
 	];
 }
 
+/**
+ * Returns the [h,s,l] representation of [r,g,b]
+ * @param {number[]} rgb - The rgb components
+ * @returns {number[]}
+ */
 export function rgbToHsl([r, g, b]) {
 	const max = Math.max(r, g, b);
 	const min = Math.min(r, g, b);
