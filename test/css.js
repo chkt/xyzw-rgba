@@ -3,7 +3,7 @@ import assert from 'assert';
 import { describe, it } from 'mocha';
 import useWith, * as use from 'tesa';
 
-import * as parse from '../source/parseCss';
+import * as css from '../source/css';
 
 
 
@@ -16,9 +16,9 @@ function invalid(value) {
 
 
 
-describe('parse', () => {
+describe('css', () => {
 	it("should accept the 'transparent' string", () => {
-		const color = parse.parse('transparent');
+		const color = css.parse('transparent');
 
 		assert.deepEqual(color, {
 			type : 'rgb',
@@ -49,7 +49,7 @@ describe('parse', () => {
 			invalid("rgb(0.2,0,0)"),
 			invalid("rgb(-1,0,0)"),
 			invalid("rgb(256,0,0)")
-		], first => parse.parse(first));
+		], first => css.parse(first));
 	});
 
 	it("should accept a hsl() formated string", () => {
@@ -78,7 +78,7 @@ describe('parse', () => {
 			invalid('hsl(0,101%,0%)'),
 			invalid('hsl(0,0%,-1%)'),
 			invalid('hsl(0,0%,101%)')
-		], first => parse.parse(first));
+		], first => css.parse(first));
 	});
 
 	it("should accept a rgba() formated string", () => {
@@ -109,7 +109,7 @@ describe('parse', () => {
 			invalid("rgba(0,0,0,0,0)"),
 			invalid("rgba(0,0,0,-1)"),
 			invalid("rgba(0,0,0,2)")
-		], first => parse.parse(first));
+		], first => css.parse(first));
 	});
 
 	it("should accept a hsla() formated string", () => {
@@ -143,7 +143,7 @@ describe('parse', () => {
 			invalid('hsla(0,0%,0,0)'),
 			invalid('hsla(0,0%,0%,-1)'),
 			invalid('hsla(0,0%,0%,2)')
-		], first => parse.parse(first));
+		], first => css.parse(first));
 	});
 
 	it("should accept a #rrggbb formated string", () => {
@@ -164,13 +164,13 @@ describe('parse', () => {
 			invalid('#ghijkl'),
 			invalid('#GHIJKL'),
 			invalid('# 00 00 00')
-		], first => parse.parse(first));
+		], first => css.parse(first));
 	});
 });
 
 describe('stringify', () => {
 	it("should return a #rrggbb string", () => {
-		const hash = parse.stringify({
+		const hash = css.stringify({
 			type : 'rgb',
 			components : [15, 15, 15, 1.0]
 		});
@@ -179,7 +179,7 @@ describe('stringify', () => {
 	});
 
 	it("should return a #rgb string", () => {
-		const hash = parse.stringify({
+		const hash = css.stringify({
 			type : 'rgb',
 			components : [17, 17, 17, 1.0]
 		});
@@ -188,14 +188,14 @@ describe('stringify', () => {
 	});
 
 	it("should return a color id string if the name is shorter than its hash representation", () => {
-		let id = parse.stringify({
+		let id = css.stringify({
 			type : 'rgb',
 			components : [0, 0, 0, 1.0]
 		});
 
 		assert.strictEqual(id, '#000');
 
-		id = parse.stringify({
+		id = css.stringify({
 			type : 'rgb',
 			components : [255, 0, 0, 1.0]
 		});
@@ -204,7 +204,7 @@ describe('stringify', () => {
 	});
 
 	it("should return a rgba() string", () => {
-		const rgba = parse.stringify({
+		const rgba = css.stringify({
 			type : 'rgb',
 			components: [1, 1, 1, 0]
 		});
@@ -213,7 +213,7 @@ describe('stringify', () => {
 	});
 
 	it("should return the 'transparent' string for a transparent black", () => {
-		const transparent = parse.stringify({
+		const transparent = css.stringify({
 			type : 'rgb',
 			components : [0, 0, 0, 0.0]
 		});
@@ -222,7 +222,7 @@ describe('stringify', () => {
 	});
 
 	it("should return a hsl() string", () => {
-		const hsl = parse.stringify({
+		const hsl = css.stringify({
 			type : 'hsl',
 			components : [0, 0, 0, 1.0]
 		});
@@ -231,7 +231,7 @@ describe('stringify', () => {
 	});
 
 	it("should return a hsla() string", () => {
-		const hsla = parse.stringify({
+		const hsla = css.stringify({
 			type : 'hsl',
 			components : [0, 0, 0, 0]
 		});
