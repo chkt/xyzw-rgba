@@ -14,6 +14,18 @@ function invalid(value) {
 	});
 }
 
+function _testComponents(item, type, c0, c1, c2, a) {
+	assert.deepStrictEqual(item, {
+		type,
+		components : [
+			c0,
+			c1,
+			c2,
+			a
+		]
+	});
+}
+
 
 
 describe('parse', () => {
@@ -52,6 +64,12 @@ describe('parse', () => {
 		], first => css.parse(first));
 	});
 
+	it("should parse a rgb() formated string into a component object", () => {
+		const res = css.parse("rgb(255,128,64)");
+
+		_testComponents(res, 'rgb', 255, 128, 64, 1.0);
+	});
+
 	it("should accept a hsl() formated string", () => {
 		useWith([
 			'hsl(0,0%,0%)',
@@ -79,6 +97,12 @@ describe('parse', () => {
 			invalid('hsl(0,0%,-1%)'),
 			invalid('hsl(0,0%,101%)')
 		], first => css.parse(first));
+	});
+
+	it("should parse a hsl() formated string into a component object", () => {
+		const res = css.parse("hsl(0,50%,50%)");
+
+		_testComponents(res, "hsl", 0, 50, 50, 1.0);
 	});
 
 	it("should accept a rgba() formated string", () => {
@@ -110,6 +134,12 @@ describe('parse', () => {
 			invalid("rgba(0,0,0,-1)"),
 			invalid("rgba(0,0,0,2)")
 		], first => css.parse(first));
+	});
+
+	it("should parse a rgba() formated string into a component object", () => {
+		const res = css.parse("rgba(255,128,64,0.5)");
+
+		_testComponents(res, 'rgb', 255, 128, 64, 0.5);
 	});
 
 	it("should accept a hsla() formated string", () => {
@@ -146,6 +176,12 @@ describe('parse', () => {
 		], first => css.parse(first));
 	});
 
+	it("should parse a hsla() formated string into a component object", () => {
+		const res = css.parse("hsla(0,50%,50%,0.5)");
+
+		_testComponents(res, 'hsl', 0, 50, 50, 0.5);
+	});
+
 	it("should accept a #rrggbb formated string", () => {
 		useWith([
 			'#000',
@@ -165,6 +201,12 @@ describe('parse', () => {
 			invalid('#GHIJKL'),
 			invalid('# 00 00 00')
 		], first => css.parse(first));
+	});
+
+	it("should parse a #rrggbb formated string into a component object", () => {
+		const res = css.parse('#ff8040');
+
+		_testComponents(res, 'rgb', 255, 128, 64, 1.0);
 	});
 });
 
