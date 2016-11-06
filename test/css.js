@@ -38,6 +38,28 @@ describe('parse', () => {
 		});
 	});
 
+	it("should accept css2 color name strings", () => {
+		useWith([
+			"black",
+			"silver",
+			"gray",
+			"white",
+			"maroon",
+			"red",
+			"purple",
+			"fuchsia",
+			"green",
+			"lime",
+			"olive",
+			"yellow",
+			"navy",
+			"blue",
+			"teal",
+			"aqua",
+			"orange"
+		], first => css.parse(first));
+	});
+
 	it("should accept a rgb() formated string", () => {
 		useWith([
 			'rgb(0,0,0)',
