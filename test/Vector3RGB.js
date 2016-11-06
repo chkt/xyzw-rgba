@@ -6,6 +6,89 @@ import Vector3RGB from '../source/Vector3RGB';
 
 
 describe('Vector3RGB', () => {
+	describe(".Define()", () => {
+		it("should return a defined instance", () => {
+			const ins = Vector3RGB.Define();
+
+			assert(ins instanceof Vector3RGB);
+		});
+
+		it("should accept the floating point components as first argument", () => {
+			const ins = Vector3RGB.Define([1.0, 0.5, 0.25]);
+
+			assert.strictEqual(ins.x, 1.0);
+			assert.strictEqual(ins.y, 0.5);
+			assert.strictEqual(ins.z, 0.25);
+			assert.strictEqual(ins.r, 255);
+			assert.strictEqual(ins.g, 128);
+			assert.strictEqual(ins.b, 64);
+		});
+
+		it("should optionally accept the target instance as second argument", () => {
+			const rgb = new Vector3RGB();
+			const ins = Vector3RGB.Define([1.0, 0.5, 0.25], rgb);
+
+			assert.strictEqual(rgb, ins);
+		});
+	});
+
+	describe(".CSS()", () => {
+		it("should accept a css formated string representation of the color as first argument", () => {
+			const colors = {
+				[ "red" ] : [255, 0, 0],
+				[ "#000" ] : [0, 0, 0],
+				["black" ] : [0, 0, 0],
+				[ "#ff8040" ] : [255, 128, 64],
+				[ "rgb(256,128,64)" ] : [255, 128, 64]
+			};
+
+			for (let str in colors) {
+				const ins = Vector3RGB.CSS(str);
+
+				assert.strictEqual(colors[str]);
+			}
+		});
+
+		it("should optionally accept a matte color as second argument", () => {
+			let ins = Vector3RGB.CSS("rgba(255,128,64,0.5)", new Vector3RGB([1.0, 1.0, 1.0]));
+
+			assert.strictEqual(ins.r, 255);
+			assert.strictEqual(ins.g, 192);
+			assert.strictEqual(ins.b, 160);
+
+			ins = Vector3RGB.CSS("rgba(255,128,64,0.5", new Vector3RGB([0.0,0.0,0.0]));
+
+			assert.strictEqual(ins.r, 128);
+			assert.strictEqual(ins.g, 64);
+			assert.strictEqual(ins.b, 32);
+		});
+
+		it("should optionally accept the target instance as third argument", () => {
+			const rgb = new Vector3RGB();
+			const ins = Vector3RGB.CSS("red", new Vector3RGB(), rgb);
+
+			assert.strictEqual(rgb, ins);
+		});
+	});
+
+	describe(".Int()", () => {
+		it("should accept a 0xrrggbb formated integer as first argument", () => {
+			const ins = Vector3RGB.Int(0xff8000);
+
+			assert.strictEqual(ins.r, 255);
+			assert.strictEqual(ins.g, 128);
+			assert.strictEqual(ins.b, 0);
+		});
+
+		it("should optionally accept the target instance as second argument", () => {
+			const rgb = new Vector3RGB();
+			const ins = Vector3RGB.Int(0xff00ff, rgb);
+
+			assert.strictEqual(ins, rgb);
+		});
+	});
+
+
 	describe('#r', () => {
 		it ("should return the rgb8 value of #n[0]", () => {
 			const rgb = new Vector3RGB([1.0, 0.9, 0.8]);
@@ -39,7 +122,7 @@ describe('Vector3RGB', () => {
 	});
 
 	describe('#g', () => {
-		it("should return the rgb scaled value of #n[1]", () => {
+		it("should return the rgb8 value of #n[1]", () => {
 			const rgb = new Vector3RGB([1.0, 0.9, 0.8]);
 
 			for (let f = 0.0; f < 1.0; f += 0.001) {
@@ -59,7 +142,7 @@ describe('Vector3RGB', () => {
 			}
 		});
 
-		it("should set the rgb scale value of #n[1]", () => {
+		it("should set the rgb8 value of #n[1]", () => {
 			const rgb = new Vector3RGB([0.0, 0.0, 0.0]);
 
 			for (let i = 0; i < 256; i += 1) {
@@ -71,7 +154,7 @@ describe('Vector3RGB', () => {
 	});
 
 	describe('#b', () => {
-		it("should return rgb scaled value of #n[2]", () => {
+		it("should return rgb8 value of #n[2]", () => {
 			const rgb = new Vector3RGB([1.0, 0.9, 0.8]);
 
 			for (let f = 0.0; f < 1.0; f += 0.001) {
@@ -91,7 +174,7 @@ describe('Vector3RGB', () => {
 			}
 		});
 
-		it("should set the rgb scale value of #n[2]", () => {
+		it("should set the rgb8 value of #n[2]", () => {
 			const rgb = new Vector3RGB([0.0, 0.0, 0.0]);
 
 			for (let i = 0; i < 256; i += 1) {
