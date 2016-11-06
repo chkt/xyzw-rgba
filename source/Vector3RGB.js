@@ -1,25 +1,32 @@
 import Math from 'xyzw/es5/Math';
 import Vector3 from 'xyzw/es5/Vector3';
 
+import * as css from './css';
+import * as hsl from './hsl';
 
 
-/**
- * The rgb() string return type constant
- */
-export const STRING_RGB = Symbol('rgb');
 
-/**
- * The #rrggbb string return type constant
- */
-export const STRING_HRGB = Symbol('hrgb');
+const ONE_DIV_TWOFIFTYSIX = 1.0 / 256.0;
+
+
 
 /**
- * The 0xRRGGBB string return type constant
+ * Returns the rgb8 value representing f
+ * @param {number} f - The floating point value
+ * @returns {int}
  */
-export const STRING_XRGB = Symbol('xrgb');
+function floatToInt(f) {
+	return Math.clamp(Math.floor(f * 256.0), 0, 255);
+}
 
-const EXPR_RGB = /^rgb\((:?\s*(\d|1\d{1,2}|2[0-4]\d|25[0-5])\s*,){2}\s*(\d|1\d{1,2}|2[0-4]\d|25[0-5])\s*\)$/;
-const EXPR_HRGB = /^#(?:([0-9A-Fa-f]){3}|([0-9A-Fa-f]{2}){3})$/;
+/**
+ * Returns the floating point value representing i
+ * @param {int} i - The rgb8 value
+ * @returns {number}
+ */
+function intToFloat(i) {
+	return i < 255 ? i * ONE_DIV_TWOFIFTYSIX : 1.0;
+}
 
 
 
@@ -29,230 +36,144 @@ const EXPR_HRGB = /^#(?:([0-9A-Fa-f]){3}|([0-9A-Fa-f]{2}){3})$/;
 export default class Vector3RGB extends Vector3 {
 
 	/**
-	 * Returns an instance representing rgb() encoded string
-	 * @constructor
-	 * @param {String} string - The rgb string
-	 * @param {Float} [scale=1.0] - The scale
-	 * @param {Vector3} [target] - The target instance
-	 * @returns {Vector3}
-	 * @throws {TypeError} if string is not a String
-	 * @throws {TypeError} if scale is not a Float or undefined
-	 * @throws {TypeError} if target is not a Vector3 instance or undefined
-	 */
-	static RGB(string, scale = 1.0, target = undefined) {
-		if (typeof string !== 'string' || typeof scale !== 'number') throw new TypeError();
-
-		const n = [0.0, 0.0, 0.0];
-
-		if (target === undefined) target = new Vector3RGB(n);
-		else if (!(target instanceof Vector3)) throw new TypeError();
-		else target.n = n;
-
-		const match = string.match(EXPR_RGB);
-
-		if (match !== null) {
-			const t = 1.0 / 255.0 * scale;
-
-			n[0] = Number.parseFloat(match[1]) * t;
-			n[1] = Number.parseFloat(match[2]) * t;
-			n[2] = Number.parseFloat(match[3]) * t;
-		}
-
-		return target;
-	}
-
-	/**
-	 * Returns an instance representing #RGB encoded string
-	 * @constructor
-	 * @param {String} string - The hash string
-	 * @param {Float} [scale=1.0] - The scale
-	 * @param {Vector3} [target] - The target instance
-	 * @returns {Vector3RGB}
-	 * @throws {TypeError} if string is not a String
-	 * @throws {TypeError} if scale is not a Float or undefined
-	 * @throws {TypeError} if target is not a Vector3 instance or undefined
-	 */
-	static HRGB(string, scale = 1.0, target = undefined) {
-		if (typeof string !== 'string' || typeof scale !== 'number') throw new TypeError();
-
-		const n = [0.0, 0.0, 0.0];
-
-		if (target === undefined) target = new Vector3RGB(n);
-		else if (!(target instanceof Vector3)) throw new TypeError();
-		else target.n = n;
-
-		const match = string.match(EXPR_HRGB);
-
-		if (match !== null) {
-			const t = 1.0 / 255.0 * scale, dup = match[1].length === 1;
-
-			n[0] = Number.parseFloat(`0x${ match[1] + (dup ? match[1] : '') }`) * t;
-			n[1] = Number.parseFloat(`0x${ match[2] + (dup ? match[2] : '') }`) * t;
-			n[2] = Number.parseFloat(`0x${ match[3] + (dup ? match[3] : '') }`) * t;
-		}
-
-		return target;
-	}
-
-	/**
-	 * Returns an instance representing <em>rrggbb</em> bit encoded <code>i</code>
-	 * @constructor
-	 * @param {Int} i - The bit encoded Int
-	 * @param {Float} [scale=1.0] - The scale
+	 * Returns a new instance
+	 * @param {number[]} n - The components
 	 * @param {Vector3RGB} [target] - The target instance
 	 * @returns {Vector3RGB}
-	 * @throws {TypeError} if i is not an Int
-	 * @throws {TypeError} if scale is not a Float or undefined
-	 * @throws {TypeError} if target is not a Vector3 instance or undefined
 	 */
-	static Int(i, scale = 1.0, target = undefined) {
-		if (Number.isSafeInteger(i) || typeof scale !== 'number') throw new TypeError();
-
-		const n = [0.0, 0.0, 0.0];
-
-		if (target === undefined) target = new Vector3RGB(n);
-		else if (!(target instanceof Vector3)) throw new TypeError();
-		else target.n = n;
-
-		const t = 1.0 / 255.0 * scale;
-
-		n[0] = i >> 16 & 0xFF * t;
-		n[1] = i >>  8 & 0xFF * t;
-		n[2] = i       & 0xFF * t;
+	static Define(n, target = undefined) {
+		if (target === undefined) target = new this(n);
+		else this.call(target, n);
 
 		return target;
 	}
 
+
 	/**
-	 * Returns an instance representing <em>aarrggbb</em> encoded <code>string</code>
-	 * @constructor
-	 * @param {String} string - The string
-	 * @param {Float} [scale=1.0] - The scale
-	 * @param {Vector3} [target] - The target instance
+	 * Returns an instance representing string
+	 * @param {string} string - The css color string
+	 * @param {Vector3} matte - The transparency matte vector
+	 * @param {Vector3RGB} [target] - The target instance
 	 * @returns {Vector3RGB}
 	 */
-	static XRGB(string, scale, target) {
-		return Vector3RGB.Int(Number.parseInt(string), scale, target);
+	static CSS(string, matte = new Vector3([1.0, 1.0, 1.0]), target = undefined) {
+		const { type, components } = css.parse(string);
+		const a = components.pop(), rgb = type === 'rgb' ? components : hsl.hslToRgb(components);
+		const mn = matte.n;
+
+		const n = [
+			Math.mix(mn[0], intToFloat(rgb[0]), a),
+			Math.mix(mn[1], intToFloat(rgb[1]), a),
+			Math.mix(mn[2], intToFloat(rgb[2]), a)
+		];
+
+		return this.Define(n, target);
+	}
+
+	/**
+	 * Returns an instance representing rrggbb hex encoded i
+	 * @param {int} i - The bit encoded Int
+	 * @param {Vector3} [target] - The target instance
+	 * @returns {Vector3RGB}
+	 * @throws {TypeError} if i is not an int
+	 * @throws {TypeError} if scale is not a number
+	 */
+	static Int(i, target = undefined) {
+		if (!Number.isSafeInteger(i)) throw new TypeError();
+
+		return this.Define([
+			intToFloat(i >> 16 & 0xff),
+			intToFloat(i >> 8 & 0xff),
+			intToFloat(i & 0xff)
+		], target);
 	}
 
 
 	/**
 	 * The r component
 	 * Alias of {@link Vector3#x}
+	 * @type {number}
 	 */
 	get r() {
-		return this.n[0];
+		return floatToInt(this.n[0]);
 	}
 
 	set r(n) {
-		this.n[0] = n;
+		this.n[0] = intToFloat(n);
 	}
 
 
 	/**
 	 * The g component
 	 * Alias of {@link Vector3#y}
+	 * @type {number}
 	 */
 	get g() {
-		return this.n[1];
+		return floatToInt(this.n[1]);
 	}
 
 	set g(n) {
-		this.n[1] = n;
+		this.n[1] = intToFloat(n);
 	}
 
 
 	/**
 	 * The b component
 	 * Alias of {@link Vector3#z}
+	 * @type {number}
 	 */
 	get b() {
-		return this.n[2];
+		return floatToInt(this.n[2]);
 	}
 
 	set b(n) {
-		this.n[2] = n;
+		this.n[2] = intToFloat(n);
 	}
 
 
 	/**
-	 * Returns a rgb() encoded string representation of the instance
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {String}
-	 * @throws {TypeError} if scale is not a Float or undefined
+	 * Returns a css representation of the instance
+	 * @returns {string}
 	 */
-	toRGB(scale = 1.0) {
-		if (typeof scale !== 'number') throw new TypeError();
+	toCSS() {
+		const n = this.n;
 
-		scale = 1.0 / scale;
+		return css.stringify({
+			type : 'rgb',
+			components : [
+				floatToInt(n[0]),
+				floatToInt(n[1]),
+				floatToInt(n[2]),
+				1.0
+			]
+		});
+	}
 
-		const str = this.n
-			.map((item, index, source) => (Math.clamp(item * scale, 0.0, 1.0) * 255.0).toFixed())
-			.join(",");
 
-		return `rgb(${ str })`;
+	/**
+	 * Returns a rrggbb hex encoded integer representation of the instance
+	 * @returns {int}
+	 */
+	toInt() {
+		const n = this.n;
+
+		return floatToInt(n[0]) << 16 | floatToInt(n[1]) << 8 | floatToInt(n[2]);
+	}
+
+
+	/**
+	 * Returns a css representation of the instance
+	 * @returns {string}
+	 */
+	toString() {
+		return this.toCSS();
 	}
 
 	/**
-	 * Returns a #rrggbb encoded string representation of the instance
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {String}
-	 * @throws {TypeError} if scale is not a Float or undefined
+	 * Returns a rrggbb hex encoded representation of the instance
+	 * @returns {int}
 	 */
-	toHRGB(scale = 1.0) {
-		if (typeof scale !== 'number') throw new TypeError();
-
-		scale = 1.0 / scale;
-
-		const str = this.n
-			.map((item, index, source) => (Math.clamp(item * scale, 0.0, 1.0) * 255.0).toString(16))
-			.join("");
-
-		return `#${ str }`;
-	}
-
-	/**
-	 * Returns a rrggbb bit encoded integer representation of the instance
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {Int}
-	 * @throws {TypeError} if scale is not a Float
-	 */
-	toInt(scale = 1.0) {
-		if (typeof scale !== 'number') throw new TypeError();
-
-		scale = 1.0 / scale;
-
-		return this.n
-			.map((item, index, source) => Math.round(Math.clamp(item * scale, 0.0, 1.0) * 255.0))
-			.reduce((prev, current, index, source) => prev | current << 8 * (2 - index));
-	}
-
-	/**
-	 * Returns a string representation of the instance
-	 * @param {String} [type=STRING_XRGB] - The type
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {String}
-	 * @throws {TypeError} if type is not a STRING_* constant
-	 */
-	toString(type = STRING_XRGB, scale = 1.0) {
-		switch (type) {
-			case STRING_RGB :
-				return this.toRGB(scale);
-			case STRING_HRGB :
-				return this.toHRGB(scale);
-			case STRING_XRGB :
-				return this.toInt(scale).toString(16);
-			default :
-				throw new TypeError();
-		}
-	}
-
-	/**
-	 * Returns the {@link Vector3RGB#toInt} representation of the instance
-	 * @param {Float} [scale] - The scale
-	 * @returns {Int}
-	 */
-	valueOf(scale) {
-		return this.toInt(scale);
+	valueOf() {
+		return this.toInt();
 	}
 }
