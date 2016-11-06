@@ -116,7 +116,7 @@ describe('Vector3RGB', () => {
 			for (let i = 0; i < 256; i += 1) {
 				rgb.r = i;
 
-				assert.strictEqual(rgb.x, i / 256.0);
+				assert.strictEqual(rgb.x, i < 255 ? i / 256.0 : 1.0);
 			}
 		});
 	});
@@ -148,7 +148,7 @@ describe('Vector3RGB', () => {
 			for (let i = 0; i < 256; i += 1) {
 				rgb.g = i;
 
-				assert.strictEqual(rgb.y, i / 256.0);
+				assert.strictEqual(rgb.y, i < 255 ? i / 256.0 : 1.0);
 			}
 		});
 	});
@@ -180,7 +180,7 @@ describe('Vector3RGB', () => {
 			for (let i = 0; i < 256; i += 1) {
 				rgb.b = i;
 
-				assert.strictEqual(rgb.z, i / 256.0);
+				assert.strictEqual(rgb.z, i < 255 ? i / 256.0 : 1.0);
 			}
 		});
 	});
