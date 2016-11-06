@@ -39,13 +39,15 @@ describe('Vector3RGB', () => {
 				[ "#000" ] : [0, 0, 0],
 				["black" ] : [0, 0, 0],
 				[ "#ff8040" ] : [255, 128, 64],
-				[ "rgb(256,128,64)" ] : [255, 128, 64]
+				[ "rgb(255,128,64)" ] : [255, 128, 64]
 			};
 
 			for (let str in colors) {
 				const ins = Vector3RGB.CSS(str);
 
-				assert.strictEqual(colors[str]);
+				assert.strictEqual(ins.r, colors[str][0]);
+				assert.strictEqual(ins.g, colors[str][1]);
+				assert.strictEqual(ins.b, colors[str][2]);
 			}
 		});
 
@@ -56,7 +58,7 @@ describe('Vector3RGB', () => {
 			assert.strictEqual(ins.g, 192);
 			assert.strictEqual(ins.b, 160);
 
-			ins = Vector3RGB.CSS("rgba(255,128,64,0.5", new Vector3RGB([0.0,0.0,0.0]));
+			ins = Vector3RGB.CSS("rgba(255,128,64,0.5)", new Vector3RGB([0.0,0.0,0.0]));
 
 			assert.strictEqual(ins.r, 128);
 			assert.strictEqual(ins.g, 64);
