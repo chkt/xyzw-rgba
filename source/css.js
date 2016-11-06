@@ -18,23 +18,23 @@ const EXPRESSION_LIST = [
 
 
 const COLOR_MAP = {
-	black : '000',
-	silver : 'c0c0c0',
-	gray : '808080',
-	white : 'fff',
-	maroon : '800000',
-	red : 'f00',
-	purple : '800080',
-	fuchsia : 'f0f',
-	green : '008000',
-	lime : '0f0',
-	olive : '808000',
-	yellow : 'ff0',
-	navy : '000080',
-	blue : '00f',
-	teal : '008080',
-	aqua : '0ff',
-	orange : 'ffa500'
+	black : '#000',
+	silver : '#c0c0c0',
+	gray : '#808080',
+	white : '#fff',
+	maroon : '#800000',
+	red : '#f00',
+	purple : '#800080',
+	fuchsia : '#f0f',
+	green : '#008000',
+	lime : '#0f0',
+	olive : '#808000',
+	yellow : '#ff0',
+	navy : '#000080',
+	blue : '#00f',
+	teal : '#008080',
+	aqua : '#0ff',
+	orange : '#ffa500'
 };
 
 const ALIAS_NAME = [
@@ -212,7 +212,13 @@ export function parse(css) {
 	for (let expr of EXPRESSION_LIST) {
 		const match = css.match(expr);
 
-		if (match !== null) return _getDescriptor(...match.slice(1));
+		if (match !== null) return _getDescriptor(
+			match[1],
+			Number.parseInt(match[2]),
+			Number.parseInt(match[3]),
+			Number.parseInt(match[4]),
+			match.length > 5 ? Number.parseFloat(match[5]) : 1.0
+		);
 	}
 
 	throw new Error();
@@ -235,23 +241,17 @@ export function stringify({ type, components }) {
 
 	let res = '';
 
-	switch (type) {
-		case 'hsl':
-			res = _stringifyHSL(components);
-
-			break;
-
-		case 'rgb':
-			res = _stringifyRGB(components);
-
-			break;
-
-		default : throw new Error();
-	}
+	if (type === 'rgb') res = _stringifyRGB(components);
+	else if (type === 'hsl') res = _stringifyHSL(components);
+	else throw new Error();
 
 	const index = ALIAS_STR.indexOf(res);
 
-	return index === -1 ? res : ALIAS_NAME[index];
+	if (index === -1) return res;
+
+	const alias = ALIAS_NAME[index];
+
+	return alias.length < res.length ? alias : res;
 }
 
 
