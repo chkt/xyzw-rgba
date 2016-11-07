@@ -1,18 +1,14 @@
 import Math from 'xyzw/es5/Math';
 import Vector4 from 'xyzw/es5/Vector4';
 
-
-
-/**
- * The rgba() string return type constant
- */
-export const STRING_RGBA = Symbol('rgba');
-/**
- * The 0xAARRGGBB string return type constant
- */
-export const STRING_XARGB = Symbol('xargb');
-
-const EXPR_RGBA = /^rgba\((?:\s*(\d|1\d{1,2}|2[0-4]\d|25[0-5])\s*,){3}\s*([01](?:\.\d+)?)\s*\)\$/;
+import * as css from './css';
+import * as hsl from './hsl';
+import {
+	floatToInt,
+	intToFloat,
+	intIntIntToFloat,
+	degPctPctToFloat
+} from './convertRGB';
 
 
 
@@ -22,129 +18,101 @@ const EXPR_RGBA = /^rgba\((?:\s*(\d|1\d{1,2}|2[0-4]\d|25[0-5])\s*,){3}\s*([01](?
 export default class Vector4RGBA extends Vector4 {
 
 	/**
-	 * Returns an instance representing the rgba() encoded string
-	 * @constructor
-	 * @param {String} string - The rgba string
-	 * @param {Float} [scale=1.0] - The scale
-	 * @param {Vector4} [target] - The target instance
-	 * @returns {Vector4}
-	 * @throws {TypeError} if string is not a String
-	 * @throws {TypeError} if scale is not a Float or undefined
-	 * @throws {TypeError} if target is not a Vector4 or undefined
+	 * Returns a defined instance
+	 * @param {number[]} n - The components
+	 * @param {Vector4RGBA} target - The target instance
+	 * @returns {Vector4RGBA}
 	 */
-	static RGBA(string, scale = 1.0, target = undefined) {
-		if (typeof string !== 'string' || typeof scale !== 'number') throw new TypeError();
-
-		const n = [0.0, 0.0, 0.0, 0.0];
-
-		if (target === undefined) target = new Vector4RGBA(n);
-		else if (!(target instanceof Vector4)) throw new TypeError();
-		else target.n = n;
-
-		const match = string.match(EXPR_RGBA);
-
-		if (match !== null) {
-			const t = 1.0 / 255.0 * scale;
-
-			n[0] = parseFloat(match[1]) * t;
-			n[1] = parseFloat(match[2]) * t;
-			n[2] = parseFloat(match[3]) * t;
-			n[3] = parseFloat(match[4]);
-		}
+	static Define(n, target = undefined) {
+		if (target === undefined) target = new this(n);
+		else this.call(target, n);
 
 		return target;
 	}
 
+
 	/**
-	 * Returns an instance representing 0xAARRGGBB bit encoded i
-	 * @constructor
-	 * @param {Int} i - The encoded Int
-	 * @param {type} [scale=1.0] - The scale
-	 * @param {type} [target] - The target instance
+	 * Returns an instance representing string
+	 * @param {string} string - The css color string
+	 * @param {Vector4RGBA} [target] - The target instance
 	 * @returns {Vector4RGBA}
-	 * @throws {TypeError} if i is not a Int
-	 * @throws {TypeError} if scale is not a Float or undefined
-	 * @throws {TypeError} if target is not a Vector4 instance or undefined
+	 * @constructor
 	 */
-	static Int(i, scale = 1.0, target = undefined) {
-		if (!Number.isSafeInteger(i) || typeof scale !== 'number') throw new TypeError();
+	static CSS(string, target = undefined) {
+		const { type, components } = css.parse(string);
+		const a = components.pop();
+		const rgb = type === 'rgb' ? intIntIntToFloat(components) : hsl.hslToRgb(degPctPctToFloat(components));
 
-		const n = [0.0, 0.0, 0.0, 0.0];
-
-		if (target === undefined) target = new Vector4RGBA(n);
-		else if (!(target instanceof Vector4)) throw new TypeError();
-		else target.n = n;
-
-		const t = 1.0 / 255.0 * scale;
-
-		n[0] = i >> 16 & 0xFF * t;
-		n[1] = i >>  8 & 0xFF * t;
-		n[2] = i       & 0xFF * t;
-		n[3] = i >> 24 & 0xFF * t;
-
-		return target;
+		return this.Define([
+			rgb[0],
+			rgb[1],
+			rgb[2],
+			a
+		], target);
 	}
 
 	/**
-	 * Returns an instance representing AARRGGBB encoded string
-	 * @constructor
-	 * @param {String} string - The string
-	 * @param {Float} [scale=1.0] - The scale
-	 * @param {type} [target] - The target instance
+	 * Returns an instance representing 0xaarrggbb hex encoded i
+	 * @param {int} i - The hex encoded color
+	 * @param {Vector4RGBA} [target] - The target instance
 	 * @returns {Vector4RGBA}
 	 */
-	static XARGB(string, scale, target) {
-		return Vector4RGBA.Int(Number.parseInt(string), scale, target);
+	static Int(i, target = undefined) {
+		return this.Define([
+			intToFloat(i >> 16 & 0xff),
+			intToFloat(i >> 8 & 0xff),
+			intToFloat(i & 0xff),
+			intToFloat(i >> 24 & 0xff)
+		], target);
 	}
-
 
 
 	/**
 	 * The r component
 	 * Alias of {@link Vector4#x}
-	 * @type Float
+	 * @type {number}
 	 */
 	get r() {
-		return this.n[0];
+		return floatToInt(this.n[0]);
 	}
 
 	set r(n) {
-		this.n[0] = n;
+		this.n[0] = intToFloat(n);
 	}
 
 
 	/**
 	 * The g component
 	 * Alias of {@link Vector4#y}
-	 * @type Float
+	 * @type {number}
 	 */
 	get g() {
-		return this.n[1];
+		return floatToInt(this.n[1]);
 	}
 
 	set g(n) {
-		this.n[1] = n;
+		this.n[1] = intToFloat(n);
 	}
 
 
 	/**
 	 * The b component
 	 * Alias of {@link Vector4#z}
-	 * @type Float
+	 * @type {number}
 	 */
 	get b() {
-		return this.n[2];
+		return floatToInt(this.n[2]);
 	}
 
 	set b(n) {
-		this.n[2] = n;
+		this.n[2] = intToFloat(n);
 	}
 
 
 	/**
 	 * The a component
 	 * Alias of {@link Vector4#w}
-	 * @type Float
+	 * @type {number}
 	 */
 	get a() {
 		return this.n[3];
@@ -156,66 +124,50 @@ export default class Vector4RGBA extends Vector4 {
 
 
 	/**
-	 * Returns a rgba() encoded string representation of the instance
-	 * @param {Float} [scale=1.0] - The rgb scale
-	 * @returns {String}
-	 * @throws {TypeError} if scale is not a Float or undefined
+	 * Returns a css color string representation of the instance
+	 * @returns {string}
 	 */
-	toRGBA(scale = 1.0) {
-		if (typeof scale !== 'number') throw new TypeError();
-
+	toCSS() {
 		const n = this.n;
 
-		scale = 1.0 / scale;
-
-		return `rgba(${
-			(Math.clamp(n[0] * scale, 0.0, 1.0) * 255.0).toFixed()
-		},${
-			(Math.clamp(n[1] * scale, 0.0, 1.0) * 255.0).toFixed()
-		},${
-			(Math.clamp(n[2] * scale, 0.0, 1.0) * 255.0).toFixed()
-		},${
-			Math.clamp(n[3] * scale, 0.0, 1.0).toFixed(4)
-		})`;
+		return css.stringify({
+			type : 'rgb',
+			components : [
+				floatToInt(n[0]),
+				floatToInt(n[1]),
+				floatToInt(n[2]),
+				n[3]
+			]
+		});
 	}
 
 	/**
-	 * Returns a aarrggbb bit encoded integer representation of the instance
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {Int}
-	 * @throws {TypeError} if scale is not a Float or undefined
+	 * Returns a 0xaarrggbb hex encoded integer representation of the instance
+	 * @returns {int}
 	 */
-	toInt(scale = 1.0) {
-		if (typeof scale !== 'number') throw new TypeError();
+	toInt() {
+		const n = this.n;
 
-		scale = 1.0 / scale;
+		return floatToInt(n[3]) << 24 |
+			floatToInt(n[0]) << 16 |
+			floatToInt(n[1]) << 8 |
+			floatToInt(n[2]);
+	}
 
-		return this.n
-			.map((item, index, source) => Math.round(Math.clamp(item * scale, 0.0, 1.0) * 255.0))
-			.reduce((prev, current, index) => prev | current << 8 * ((2 - index) % 4));
+
+	/**
+	 * Returns a css color string representation of the instance
+	 * @returns {string}
+	 */
+	toString() {
+		return this.toCSS();
 	}
 
 	/**
-	 * Returns a string representation of the instance
-	 * @param {Uint} [STRING_XARGB] - The return type
-	 * @param {Float} [scale=1.0] - The scale
-	 * @returns {String}
-	 * @throws {TypeError} if type is not a STRING_* constant
+	 * Returns a aarrggbb hex encoded int representation of the instance
+	 * @returns {int}
 	 */
-	toString(type = STRING_RGBA, scale = 1.0) {
-		switch (type) {
-			case STRING_RGBA : return this.toRGBA(scale);
-			case STRING_XARGB : return this.toInt(scale).toString(16);
-			default : throw new TypeError();
-		}
-	}
-
-	/**
-	 * Returns a {@link Vector4RGBA#toInt} representation of the instance
-	 * @param {Float} [scale]
-	 * @returns {Int}
-	 */
-	valueOf(scale) {
-		return this.toInt(scale);
+	valueOf() {
+		return this.toInt();
 	}
 }
