@@ -1,7 +1,7 @@
 {
 	"name" : "xyzw-rgba",
-	"description" : "Color vectors and transforms",
-	"version" : "0.9.1",
+	"description" : "RGB and RGBA Vectors, HSL and HSLA color transforms",
+	"version" : "0.9.2",
 	"license" : "MIT",
 
 	"keywords" : [
@@ -10,6 +10,7 @@
 		"projection",
 		"rgb",
 		"rgba",
+		"hsl",
 		"hsla"
 	],
 
