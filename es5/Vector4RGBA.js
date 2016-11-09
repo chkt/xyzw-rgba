@@ -3,17 +3,28 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.STRING_XARGB = exports.STRING_RGBA = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Math = require('./Math');
+var _Math = require('xyzw/es5/Math');
 
 var _Math2 = _interopRequireDefault(_Math);
 
-var _Vector2 = require('./Vector4');
+var _Vector2 = require('xyzw/es5/Vector4');
 
 var _Vector3 = _interopRequireDefault(_Vector2);
+
+var _css = require('./css');
+
+var css = _interopRequireWildcard(_css);
+
+var _hsl = require('./hsl');
+
+var hsl = _interopRequireWildcard(_hsl);
+
+var _convertRGB = require('./convertRGB');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,20 +35,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * The rgba() string return type constant
- */
-var STRING_RGBA = exports.STRING_RGBA = Symbol('rgba');
-/**
- * The 0xAARRGGBB string return type constant
- */
-var STRING_XARGB = exports.STRING_XARGB = Symbol('xargb');
-
-var EXPR_RGBA = /^rgba\((?:\s*(\d|1\d{1,2}|2[0-4]\d|25[0-5])\s*,){3}\s*([01](?:\.\d+)?)\s*\)\$/;
-
-/**
  * RGBA Four component vector representation
  */
-
 var Vector4RGBA = function (_Vector) {
 	_inherits(Vector4RGBA, _Vector);
 
@@ -48,84 +47,55 @@ var Vector4RGBA = function (_Vector) {
 	}
 
 	_createClass(Vector4RGBA, [{
-		key: 'toRGBA',
+		key: 'toCSS',
 
 
 		/**
-   * Returns a rgba() encoded string representation of the instance
-   * @param {Float} [scale=1.0] - The rgb scale
-   * @returns {String}
-   * @throws {TypeError} if scale is not a Float or undefined
+   * Returns a css color string representation of the instance
+   * @returns {string}
    */
-		value: function toRGBA() {
-			var scale = arguments.length <= 0 || arguments[0] === undefined ? 1.0 : arguments[0];
-
-			if (typeof scale !== 'number') throw new TypeError();
-
+		value: function toCSS() {
 			var n = this.n;
 
-			scale = 1.0 / scale;
-
-			return 'rgba(' + (_Math2.default.clamp(n[0] * scale, 0.0, 1.0) * 255.0).toFixed() + ',' + (_Math2.default.clamp(n[1] * scale, 0.0, 1.0) * 255.0).toFixed() + ',' + (_Math2.default.clamp(n[2] * scale, 0.0, 1.0) * 255.0).toFixed() + ',' + _Math2.default.clamp(n[3] * scale, 0.0, 1.0).toFixed(4) + ')';
+			return css.stringify({
+				type: 'rgb',
+				components: [(0, _convertRGB.floatToInt)(n[0]), (0, _convertRGB.floatToInt)(n[1]), (0, _convertRGB.floatToInt)(n[2]), n[3]]
+			});
 		}
 
 		/**
-   * Returns a aarrggbb bit encoded integer representation of the instance
-   * @param {Float} [scale=1.0] - The scale
-   * @returns {Int}
-   * @throws {TypeError} if scale is not a Float or undefined
+   * Returns a 0xaarrggbb hex encoded integer representation of the instance
+   * @returns {int}
    */
 
 	}, {
 		key: 'toInt',
 		value: function toInt() {
-			var scale = arguments.length <= 0 || arguments[0] === undefined ? 1.0 : arguments[0];
+			var n = this.n;
 
-			if (typeof scale !== 'number') throw new TypeError();
-
-			scale = 1.0 / scale;
-
-			return this.n.map(function (item, index, source) {
-				return _Math2.default.round(_Math2.default.clamp(item * scale, 0.0, 1.0) * 255.0);
-			}).reduce(function (prev, current, index) {
-				return prev | current << 8 * ((2 - index) % 4);
-			});
+			return (0, _convertRGB.floatToInt)(n[3]) << 24 | (0, _convertRGB.floatToInt)(n[0]) << 16 | (0, _convertRGB.floatToInt)(n[1]) << 8 | (0, _convertRGB.floatToInt)(n[2]);
 		}
 
 		/**
-   * Returns a string representation of the instance
-   * @param {Uint} [STRING_XARGB] - The return type
-   * @param {Float} [scale=1.0] - The scale
-   * @returns {String}
-   * @throws {TypeError} if type is not a STRING_* constant
+   * Returns a css color string representation of the instance
+   * @returns {string}
    */
 
 	}, {
 		key: 'toString',
 		value: function toString() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? STRING_RGBA : arguments[0];
-			var scale = arguments.length <= 1 || arguments[1] === undefined ? 1.0 : arguments[1];
-
-			switch (type) {
-				case STRING_RGBA:
-					return this.toRGBA(scale);
-				case STRING_XARGB:
-					return this.toInt(scale).toString(16);
-				default:
-					throw new TypeError();
-			}
+			return this.toCSS();
 		}
 
 		/**
-   * Returns a {@link Vector4RGBA#toInt} representation of the instance
-   * @param {Float} [scale]
-   * @returns {Int}
+   * Returns a aarrggbb hex encoded int representation of the instance
+   * @returns {int}
    */
 
 	}, {
 		key: 'valueOf',
-		value: function valueOf(scale) {
-			return this.toInt(scale);
+		value: function valueOf() {
+			return this.toInt();
 		}
 	}, {
 		key: 'r',
@@ -134,49 +104,49 @@ var Vector4RGBA = function (_Vector) {
 		/**
    * The r component
    * Alias of {@link Vector4#x}
-   * @type Float
+   * @type {number}
    */
 		get: function get() {
-			return this.n[0];
+			return (0, _convertRGB.floatToInt)(this.n[0]);
 		},
 		set: function set(n) {
-			this.n[0] = n;
+			this.n[0] = (0, _convertRGB.intToFloat)(n);
 		}
 
 		/**
    * The g component
    * Alias of {@link Vector4#y}
-   * @type Float
+   * @type {number}
    */
 
 	}, {
 		key: 'g',
 		get: function get() {
-			return this.n[1];
+			return (0, _convertRGB.floatToInt)(this.n[1]);
 		},
 		set: function set(n) {
-			this.n[1] = n;
+			this.n[1] = (0, _convertRGB.intToFloat)(n);
 		}
 
 		/**
    * The b component
    * Alias of {@link Vector4#z}
-   * @type Float
+   * @type {number}
    */
 
 	}, {
 		key: 'b',
 		get: function get() {
-			return this.n[2];
+			return (0, _convertRGB.floatToInt)(this.n[2]);
 		},
 		set: function set(n) {
-			this.n[2] = n;
+			this.n[2] = (0, _convertRGB.intToFloat)(n);
 		}
 
 		/**
    * The a component
    * Alias of {@link Vector4#w}
-   * @type Float
+   * @type {number}
    */
 
 	}, {
@@ -188,91 +158,60 @@ var Vector4RGBA = function (_Vector) {
 			this.n[3] = n;
 		}
 	}], [{
-		key: 'RGBA',
+		key: 'Define',
 
 
 		/**
-   * Returns an instance representing the rgba() encoded string
-   * @constructor
-   * @param {String} string - The rgba string
-   * @param {Float} [scale=1.0] - The scale
-   * @param {Vector4} [target] - The target instance
-   * @returns {Vector4}
-   * @throws {TypeError} if string is not a String
-   * @throws {TypeError} if scale is not a Float or undefined
-   * @throws {TypeError} if target is not a Vector4 or undefined
+   * Returns a defined instance
+   * @param {number[]} n - The components
+   * @param {Vector4RGBA} target - The target instance
+   * @returns {Vector4RGBA}
    */
-		value: function RGBA(string) {
-			var scale = arguments.length <= 1 || arguments[1] === undefined ? 1.0 : arguments[1];
-			var target = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+		value: function Define(n) {
+			var target = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
 
-			if (typeof string !== 'string' || typeof scale !== 'number') throw new TypeError();
-
-			var n = [0.0, 0.0, 0.0, 0.0];
-
-			if (target === undefined) target = new Vector4RGBA(n);else if (!(target instanceof _Vector3.default)) throw new TypeError();else target.n = n;
-
-			var match = string.match(EXPR_RGBA);
-
-			if (match !== null) {
-				var t = 1.0 / 255.0 * scale;
-
-				n[0] = parseFloat(match[1]) * t;
-				n[1] = parseFloat(match[2]) * t;
-				n[2] = parseFloat(match[3]) * t;
-				n[3] = parseFloat(match[4]);
-			}
+			if (target === undefined) target = new this(n);else this.call(target, n);
 
 			return target;
 		}
 
 		/**
-   * Returns an instance representing 0xAARRGGBB bit encoded i
-   * @constructor
-   * @param {Int} i - The encoded Int
-   * @param {type} [scale=1.0] - The scale
-   * @param {type} [target] - The target instance
+   * Returns an instance representing string
+   * @param {string} string - The css color string
+   * @param {Vector4RGBA} [target] - The target instance
    * @returns {Vector4RGBA}
-   * @throws {TypeError} if i is not a Int
-   * @throws {TypeError} if scale is not a Float or undefined
-   * @throws {TypeError} if target is not a Vector4 instance or undefined
+   * @constructor
+   */
+
+	}, {
+		key: 'CSS',
+		value: function CSS(string) {
+			var target = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
+
+			var _css$parse = css.parse(string);
+
+			var type = _css$parse.type;
+			var components = _css$parse.components;
+
+			var a = components.pop();
+			var rgb = type === 'rgb' ? (0, _convertRGB.intIntIntToFloat)(components) : hsl.hslToRgb((0, _convertRGB.degPctPctToFloat)(components));
+
+			return this.Define([rgb[0], rgb[1], rgb[2], a], target);
+		}
+
+		/**
+   * Returns an instance representing 0xaarrggbb hex encoded i
+   * @param {int} i - The hex encoded color
+   * @param {Vector4RGBA} [target] - The target instance
+   * @returns {Vector4RGBA}
    */
 
 	}, {
 		key: 'Int',
 		value: function Int(i) {
-			var scale = arguments.length <= 1 || arguments[1] === undefined ? 1.0 : arguments[1];
-			var target = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+			var target = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
 
-			if (!Number.isSafeInteger(i) || typeof scale !== 'number') throw new TypeError();
-
-			var n = [0.0, 0.0, 0.0, 0.0];
-
-			if (target === undefined) target = new Vector4RGBA(n);else if (!(target instanceof _Vector3.default)) throw new TypeError();else target.n = n;
-
-			var t = 1.0 / 255.0 * scale;
-
-			n[0] = i >> 16 & 0xFF * t;
-			n[1] = i >> 8 & 0xFF * t;
-			n[2] = i & 0xFF * t;
-			n[3] = i >> 24 & 0xFF * t;
-
-			return target;
-		}
-
-		/**
-   * Returns an instance representing AARRGGBB encoded string
-   * @constructor
-   * @param {String} string - The string
-   * @param {Float} [scale=1.0] - The scale
-   * @param {type} [target] - The target instance
-   * @returns {Vector4RGBA}
-   */
-
-	}, {
-		key: 'XARGB',
-		value: function XARGB(string, scale, target) {
-			return Vector4RGBA.Int(Number.parseInt(string), scale, target);
+			return this.Define([(0, _convertRGB.intToFloat)(i >> 16 & 0xff), (0, _convertRGB.intToFloat)(i >> 8 & 0xff), (0, _convertRGB.intToFloat)(i & 0xff), (0, _convertRGB.intToFloat)(i >> 24 & 0xff)], target);
 		}
 	}]);
 

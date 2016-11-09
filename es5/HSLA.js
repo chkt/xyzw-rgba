@@ -4,33 +4,47 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Math = require('./Math');
+var _Math = require('xyzw/es5/Math');
 
 var _Math2 = _interopRequireDefault(_Math);
 
-var _Vector = require('./Vector3');
+var _Vector = require('xyzw/es5/Vector3');
 
 var _Vector2 = _interopRequireDefault(_Vector);
 
-var _Vector3 = require('./Vector4');
+var _Vector3RGB = require('./Vector3RGB');
 
-var _Vector4 = _interopRequireDefault(_Vector3);
+var _Vector3RGB2 = _interopRequireDefault(_Vector3RGB);
+
+var _Vector4RGBA = require('./Vector4RGBA');
+
+var _Vector4RGBA2 = _interopRequireDefault(_Vector4RGBA);
+
+var _hsl = require('./hsl');
+
+var hsl = _interopRequireWildcard(_hsl);
+
+var _css = require('./css');
+
+var css = _interopRequireWildcard(_css);
+
+var _convertRGB = require('./convertRGB');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var RAD_TO_DEG = 180.0 / _Math2.default.PI;
-
-var ONE_THIRD_PI = 1.0 / 3.0 * _Math2.default.PI;
-var PI_DIV_THREE = 3.0 / _Math2.default.PI;
 
 /**
  * HSLA color model transform
  */
-
 var HSLA = function () {
 	_createClass(HSLA, null, [{
 		key: 'Define',
@@ -38,23 +52,21 @@ var HSLA = function () {
 
 		/**
    * Returns a defined instance
-   * @constructor
-   * @param {Number} h - The hue in radians
-   * @param {Number} s - The saturation
-   * @param {Number} l - The luminosity
-   * @param {Number} a - The alpha
+   * @param {number} h - The hue in radians
+   * @param {number} s - The saturation
+   * @param {number} l - The luminosity
+   * @param {number} a - The alpha
    * @param {HSLA} [target] - The target instance
    * @returns {HSLA}
    */
 		value: function Define(h, s, l, a, target) {
 			if (target === undefined) target = new this(h, s, l, a);else this.call(target, h, s, l, a);
 
-			return this;
+			return target;
 		}
 
 		/**
    * Returns an instance representing v
-   * @constructor
    * @param {Vector4} v - The source rgba vector
    * @param {HSLA} [target] - The target instance
    * @returns {HSLA}
@@ -63,31 +75,20 @@ var HSLA = function () {
 	}, {
 		key: 'RGBA',
 		value: function RGBA(v, target) {
-			var r = v.n[0],
-			    g = v.n[1],
-			    b = v.n[2];
+			var _hsl$rgbToHsl = hsl.rgbToHsl(v.n.slice(0, 3));
 
-			var max = _Math2.default.max(r, g, b);
-			var min = _Math2.default.min(r, g, b);
+			var _hsl$rgbToHsl2 = _slicedToArray(_hsl$rgbToHsl, 3);
 
-			var h = void 0,
-			    s = void 0,
-			    l = void 0,
-			    c = max - min;
+			var h = _hsl$rgbToHsl2[0];
+			var s = _hsl$rgbToHsl2[1];
+			var l = _hsl$rgbToHsl2[2];
 
-			if (c === 0.0) h = 0.0;else if (min === r) h = (g - b) / c % 6.0;else if (min === g) h = (b - r) / c + 2.0;else h = (r - g) / c + 4.0;
-
-			h *= ONE_THIRD_PI;
-			l = 0.5 * (max + min);
-
-			if (c === 0.0) s = 0.0;else s = c / (1.0 - _Math2.default.abs(2.0 * l - 1.0));
 
 			return this.Define(h, s, l, v.n[3], target);
 		}
 
 		/**
    * Returns an instance representing v
-   * @constructor
    * @param {Vector3} v - The source rgb vector
    * @param {HSLA} [target] - The target instance
    * @returns {HSLA}
@@ -96,7 +97,16 @@ var HSLA = function () {
 	}, {
 		key: 'RGB',
 		value: function RGB(v, target) {
-			return HSLA.RGBA(_Vector4.default.Vector3(v), target);
+			var _hsl$rgbToHsl3 = hsl.rgbToHsl(v.n);
+
+			var _hsl$rgbToHsl4 = _slicedToArray(_hsl$rgbToHsl3, 3);
+
+			var h = _hsl$rgbToHsl4[0];
+			var s = _hsl$rgbToHsl4[1];
+			var l = _hsl$rgbToHsl4[2];
+
+
+			return this.Define(h, s, l, 1.0, target);
 		}
 
 		/**
@@ -116,7 +126,7 @@ var HSLA = function () {
    * Returns true if a == b, false otherwise
    * @param {HSLA} a
    * @param {HSLA} b
-   * @returns {Boolean}
+   * @returns {boolean}
    */
 
 	}, {
@@ -127,10 +137,10 @@ var HSLA = function () {
 
 		/**
    * Creates a new instance
-   * @param {Float} h - The hue in radians
-   * @param {Float} s - The saturation
-   * @param {Float} l - The luminosity
-   * @param {Float} a - The alpha
+   * @param {number} h - The hue in radians
+   * @param {number} s - The saturation
+   * @param {number} l - The luminosity
+   * @param {number} a - The alpha
    */
 
 	}]);
@@ -162,10 +172,10 @@ var HSLA = function () {
 
 	/**
   * Redefines the instance
-  * @param {Float} h - The hue in radians
-  * @param {Float} s - The saturation
-  * @param {Float} l - The luminosity
-  * @param {Float} a - The alpha
+  * @param {number} h - The hue in radians
+  * @param {number} s - The saturation
+  * @param {number} l - The luminosity
+  * @param {number} a - The alpha
   * @returns {HSLA}
   */
 
@@ -180,7 +190,7 @@ var HSLA = function () {
 
 		/**
    * The chroma
-   * @type Float
+   * @type {number}
    */
 
 	}, {
@@ -210,20 +220,13 @@ var HSLA = function () {
 	}, {
 		key: 'toRGBA',
 		value: function toRGBA(target) {
-			var c = this.chroma;
-			var h = this.h * PI_DIV_THREE;
-			var x = c * (1.0 - _Math2.default.abs(h % 2.0 - 1.0));
+			var rgb = hsl.hslToRgb([this.h, this.s, this.l]);
 
-			var r = void 0,
-			    g = void 0,
-			    b = void 0;
+			if (target === undefined) target = new _Vector4RGBA2.default();
 
-			if (h >= 0.0 && h < 1.0) r = c, g = x, b = 0.0;else if (h >= 1.0 && h < 2.0) r = x, g = c, b = 0.0;else if (h >= 2.0 && h < 3.0) r = 0.0, g = c, b = x;else if (h >= 3.0 && h < 4.0) r = 0.0, g = x, b = c;else if (h >= 4.0 && h < 5.0) r = x, g = 0.0, b = c;else r = c, g = 0.0, b = x;
+			target.n = [].concat(_toConsumableArray(rgb), [this.a]);
 
-			var min = this.l - 0.5 * c;
-			var n = [r + min, g + min, b + min, this.a];
-
-			if (target === undefined) return new _Vector4.default(n);else return target.define(n);
+			return target;
 		}
 
 		/**
@@ -236,47 +239,50 @@ var HSLA = function () {
 	}, {
 		key: 'toRGB',
 		value: function toRGB() {
-			var matte = arguments.length <= 0 || arguments[0] === undefined ? new _Vector2.default() : arguments[0];
-			var target = arguments[1];
+			var matte = arguments.length <= 0 || arguments[0] === undefined ? new _Vector2.default([1.0, 1.0, 1.0]) : arguments[0];
+			var target = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
 
-			var rgba = this.toRGBA(),
-			    a = rgba.n[3];
+			var rgb = hsl.hslToRgb([this.h, this.s, this.l]),
+			    a = this.a;
+			var mn = matte.n;
 
-			var n = [_Math2.default.mix(matte.n[0], rgba.n[0], a), _Math2.default.mix(matte.n[1], rgba.n[1], a), _Math2.default.mix(matte.n[2], rgba.n[2], a)];
+			if (target === undefined) target = new _Vector3RGB2.default();
 
-			if (target === undefined) return new _Vector2.default(n);else return target.define(n);
+			target.n = [_Math2.default.mix(mn[0], rgb[0], a), _Math2.default.mix(mn[1], rgb[1], a), _Math2.default.mix(mn[2], rgb[2], a)];
+
+			return target;
 		}
 
 		/**
    * Returns a css-formated hsl or hsla representation of the instance
-   * @returns {String}
+   * @returns {string}
    */
 
 	}, {
 		key: 'toCSS',
 		value: function toCSS() {
-			var hsl = _Math2.default.round(this.h * RAD_TO_DEG) + ',' + _Math2.default.round(this.s * 100.0) + '%,' + _Math2.default.round(this.l * 100.0) + '%';
+			var hsl = (0, _convertRGB.floatToDegPctPct)([this.h, this.s, this.l]);
 
-			if (this.a === 1.0) return 'hsl(' + hsl + ')';else return 'hsla(' + hsl + ',' + this.a.toFixed(4) + ')';
+			return css.stringify({
+				type: 'hsl',
+				components: [].concat(_toConsumableArray(hsl), [this.a])
+			});
 		}
 
 		/**
    * Returns a string representation of the instance
-   * @param {Uint} [digits=3] - The decimal digits
-   * @returns {String}
+   * @returns {string}
    */
 
 	}, {
 		key: 'toString',
 		value: function toString() {
-			var digits = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
-
-			return '[HSLA](' + this.h.toFixed(digits) + ',' + this.s.toFixed(digits) + ',' + this.l.toFixed(digits) + ',' + this.a.toFixed(digits) + ')';
+			return this.toCSS();
 		}
 	}, {
 		key: 'chroma',
 		get: function get() {
-			return (1.0 - _Math2.default.abs(2.0 * this.l - 1.0)) * this.s;
+			return hsl.chroma(this.s, this.l);
 		}
 	}]);
 
