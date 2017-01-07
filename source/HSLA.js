@@ -88,22 +88,22 @@ export default class HSLA {
 	constructor(h, s, l, a) {
 		/**
 		 * The hue
-		 * @type {Float}
+		 * @type {number}
 		 */
 		this.h = h;
 		/**
 		 * The saturation
-		 * @type {Float}
+		 * @type {number}
 		 */
 		this.s = s;
 		/**
 		 * The luminosity
-		 * @type {Float}
+		 * @type {number}
 		 */
 		this.l = l;
 		/**
 		 * The alpha
-		 * @type {Float}
+		 * @type {number}
 		 */
 		this.a = a;
 	}
