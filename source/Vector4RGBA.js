@@ -36,7 +36,6 @@ export default class Vector4RGBA extends Vector4 {
 	 * @param {string} string - The css color string
 	 * @param {Vector4RGBA} [target] - The target instance
 	 * @returns {Vector4RGBA}
-	 * @constructor
 	 */
 	static CSS(string, target = undefined) {
 		const { type, components } = css.parse(string);
