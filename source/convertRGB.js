@@ -4,16 +4,19 @@ import Math from 'xyzw/es5/Math';
 
 /**
  * The 1 / 256 constant
+ * @private
  * @type {number}
  */
 const ONE_DIV_TWOFIFTYSIX = 1.0 / 256.0;
 /**
  * The deg to rad conversion constant
+ * @private
  * @type {number}
  */
 const DEG_TO_RAD = Math.PI / 180.0;
 /**
  * The rad to deg conversion constant
+ * @private
  * @type {number}
  */
 const RAD_TO_DEG = 180.0 / Math.PI;
