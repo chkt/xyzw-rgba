@@ -32,6 +32,7 @@ describe("intToFloat()", () => {
 	});
 });
 
+
 describe("floatToPct()", () => {
 	it("should return the integer percent value corresponding to each floating point value input", () => {
 		const iv = 0.005 - Number.EPSILON;
@@ -55,6 +56,53 @@ describe("pctToFloat()", () => {
 		assert.strictEqual(1.0, convert.pctToFloat(100));
 	});
 });
+
+
+describe("radToDeg()", () => {
+	it("should the integer degree value corresponding to each radian input value", () => {
+		for (let rad = 0; rad < Math.PI * 2.0; rad += Math.PI * 0.01) {
+			const deg = Math.round(rad * 180.0 / Math.PI);
+
+			assert.strictEqual(convert.radToDeg(rad), deg);
+		}
+	});
+
+	it("should return the single rotation equivalent for multiple rotations", () => {
+		for (let rad = Math.PI; rad < Math.PI * 20.0; rad += Math.PI * 2.0) assert.strictEqual(convert.radToDeg(rad), 180);
+	});
+
+	it("should return the positive complement for negative rotations", () => {
+		for (let rad = -Math.PI; rad > -Math.PI * 20.0; rad -= Math.PI * 2.0) assert.strictEqual(convert.radToDeg(rad), 180);
+	});
+});
+
+describe("degToRad()", () => {
+	it("should return the radian value corresponding to each integer degree value", () => {
+		for (let deg = 0; deg < 360; deg += 1) {
+			const rad = deg * Math.PI / 180.0;
+
+			assert(
+				Math.abs(convert.degToRad(deg) - rad) < 1.0e-10,
+				`degToRad returned ${ convert.degToRad(deg) } for ${ deg }, expected ${ rad }`
+			);
+		}
+	});
+
+	it("should return the single rotation equivalent for multiple rotations", () => {
+		for (let deg = 180; deg < 3600; deg += 360) assert(
+			Math.abs(convert.degToRad(deg) - Math.PI) < 1.0e-10,
+			`degToRad returned ${ convert.degToRad(deg) } for ${ deg }, expected ${ Math.PI }`
+		);
+	});
+
+	it("should return the positive complement for negative rotations", () => {
+		for (let deg = -180; deg > -3600; deg -= 360) assert(
+			Math.abs(convert.degToRad(deg) - Math.PI) < 1.0e-10,
+			`degToRad returned ${ convert.degToRad(deg) } for ${ deg }, expected ${ Math.PI }`
+		);
+	});
+});
+
 
 describe("floatToIntIntInt()", () => {
 	it("should return the rgb8 corresponding to each floating point value input", () => {
