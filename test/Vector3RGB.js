@@ -206,6 +206,24 @@ describe('Vector3RGB', () => {
 
 			assert.strictEqual(rgb.toCSS(), '#ff8040');
 		});
+
+		it("should return a rgb() formated string representation when using fast generation", () => {
+			const rgb = new Vector3RGB();
+
+			assert.strictEqual(rgb.toCSS(true), 'rgb(0,0,0)');
+
+			rgb.r = 255;
+
+			assert.strictEqual(rgb.toCSS(true), 'rgb(255,0,0)');
+
+			rgb.g = 128;
+
+			assert.strictEqual(rgb.toCSS(true), 'rgb(255,128,0)');
+
+			rgb.b = 64;
+
+			assert.strictEqual(rgb.toCSS(true), 'rgb(255,128,64)');
+		});
 	});
 
 	describe("#toInt()", () => {
