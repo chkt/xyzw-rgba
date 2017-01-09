@@ -463,6 +463,10 @@ Alias of [Vector3#z](Vector3#z)
 
 Returns a css representation of the instance
 
+**Parameters**
+
+-   `fast` **bool?** True if string should be generated fast, false if generated string should be small (optional, default `false`)
+
 Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ### toInt
@@ -547,6 +551,10 @@ Alias of [Vector4#w](Vector4#w)
 ### toCSS
 
 Returns a css color string representation of the instance
+
+**Parameters**
+
+-   `fast` **bool?** True if css string should be generated fast, false if generated string should be small (optional, default `false`)
 
 Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
