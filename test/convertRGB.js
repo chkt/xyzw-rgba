@@ -20,6 +20,11 @@ describe("floatToInt()", () => {
 	it("should return 255 for the floating point value input 1.0", () => {
 		assert.strictEqual(convert.floatToInt(1.0), 255);
 	});
+
+	it("should clamp rgb8 values between 0 and 255", () => {
+		assert.strictEqual(convert.floatToInt(-1.0), 0);
+		assert.strictEqual(convert.floatToInt(2.0), 255);
+	});
 });
 
 describe("intToFloat()", () => {
@@ -44,6 +49,11 @@ describe("floatToPct()", () => {
 			assert.strictEqual(convert.floatToPct(f - iv), i);
 			assert.strictEqual(convert.floatToPct(f + iv), i);
 		}
+	});
+
+	it("should clamp integer values between 0 and 100", () => {
+		assert.strictEqual(convert.floatToPct(-1.0), 0);
+		assert.strictEqual(convert.floatToPct(2.0), 100);
 	});
 });
 
