@@ -8,6 +8,10 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 exports.floatToInt = floatToInt;
 exports.intToFloat = intToFloat;
+exports.floatToPct = floatToPct;
+exports.pctToFloat = pctToFloat;
+exports.radToDeg = radToDeg;
+exports.degToRad = degToRad;
 exports.intIntIntToFloat = intIntIntToFloat;
 exports.floatToIntIntInt = floatToIntIntInt;
 exports.degPctPctToFloat = degPctPctToFloat;
@@ -21,19 +25,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * The 1 / 256 constant
+ * @private
  * @type {number}
  */
 var ONE_DIV_TWOFIFTYSIX = 1.0 / 256.0;
 /**
  * The deg to rad conversion constant
+ * @private
  * @type {number}
  */
 var DEG_TO_RAD = _Math2.default.PI / 180.0;
 /**
  * The rad to deg conversion constant
+ * @private
  * @type {number}
  */
 var RAD_TO_DEG = 180.0 / _Math2.default.PI;
+/**
+ * The full circle in radians
+ * @private
+ * @type {number}
+ */
+var TWO_PI = _Math2.default.PI * 2.0;
 
 /**
  * Returns the rgb8 value representing f
@@ -51,6 +64,49 @@ function floatToInt(f) {
  */
 function intToFloat(i) {
   return i < 255 ? i * ONE_DIV_TWOFIFTYSIX : 1.0;
+}
+
+/**
+ * Returns the percent value representing f
+ * @param {number} f - The floating point value
+ * @returns {int}
+ */
+function floatToPct(f) {
+  return _Math2.default.round(f * 100.0);
+}
+
+/**
+ * Returns the floating point value representing i
+ * @param {int} i - The percent value
+ * @returns {number}
+ */
+function pctToFloat(i) {
+  return i * 0.01;
+}
+
+/**
+ * Returns the degree value representing f
+ * @param {number} f - The radian value
+ * @returns {int}
+ */
+function radToDeg(f) {
+  f %= TWO_PI;
+  f = _Math2.default.sign(f) !== -1 ? f : f + TWO_PI;
+
+  return _Math2.default.round(f * RAD_TO_DEG);
+}
+
+/**
+ * Returns the radian value representing i
+ * @param {int} i - The degree value
+ * @returns {number}
+ */
+function degToRad(i) {
+  var f = i * DEG_TO_RAD;
+
+  f %= TWO_PI;
+
+  return _Math2.default.sign(f) !== -1 ? f : f + TWO_PI;
 }
 
 /**
@@ -95,7 +151,7 @@ function degPctPctToFloat(_ref5) {
   var b = _ref6[1];
   var c = _ref6[2];
 
-  return [a * DEG_TO_RAD, b * 0.01, c * 0.01];
+  return [degToRad(a), pctToFloat(b), pctToFloat(c)];
 }
 
 /**
@@ -110,5 +166,5 @@ function floatToDegPctPct(_ref7) {
   var b = _ref8[1];
   var c = _ref8[2];
 
-  return [a * RAD_TO_DEG, b * 100.0, c * 100.0];
+  return [radToDeg(a), floatToPct(b), floatToPct(c)];
 }

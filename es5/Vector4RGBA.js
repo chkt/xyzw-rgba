@@ -180,7 +180,6 @@ var Vector4RGBA = function (_Vector) {
    * @param {string} string - The css color string
    * @param {Vector4RGBA} [target] - The target instance
    * @returns {Vector4RGBA}
-   * @constructor
    */
 
 	}, {
