@@ -52,14 +52,21 @@ var Vector3RGB = function (_Vector) {
 
 		/**
    * Returns a css representation of the instance
+   * @param {bool} [fast=false] - True if string should be generated fast, false if generated string should be small
    * @returns {string}
    */
 		value: function toCSS() {
+			var fast = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
 			var n = this.n;
+
+			var rgba = [(0, _convertRGB.floatToInt)(n[0]), (0, _convertRGB.floatToInt)(n[1]), (0, _convertRGB.floatToInt)(n[2]), 1.0];
+
+			if (fast) return 'rgb(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ')';
 
 			return css.stringify({
 				type: 'rgb',
-				components: [(0, _convertRGB.floatToInt)(n[0]), (0, _convertRGB.floatToInt)(n[1]), (0, _convertRGB.floatToInt)(n[2]), 1.0]
+				components: rgba
 			});
 		}
 
