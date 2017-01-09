@@ -147,12 +147,28 @@ describe("degPctPctToFloat()", () => {
 		for (let deg = 0; deg <= 360; deg += 1) {
 			for (let pct = 0; pct <= 100; pct += 1) {
 				const input = [deg, pct, 100 - pct];
-				const output = [deg / 360 * Math.PI * 2.0, pct / 100.0, 1.0 - pct / 100.0];
+				const output = [
+					convert.degToRad(deg),
+					convert.pctToFloat(pct),
+					convert.pctToFloat(100 - pct)
+				];
+
 				const res = convert.degPctPctToFloat(input);
 
-				assert(Math.abs(res[0] - output[0]) < 1.0e-10);
-				assert(Math.abs(res[1] - output[1]) < 1.0e-10);
-				assert(Math.abs(res[2] - output[2]) < 1.0e-10);
+				assert(
+					Math.abs(res[0] - output[0]) < 1.0e-10,
+					`degPctPctToFloat[0] returned ${ convert.degPctPctToFloat(input)[0] } for ${ input[0] }, expected ${ output[0] }`
+				);
+
+				assert(
+					Math.abs(res[1] - output[1]) < 1.0e-10,
+					`degPctPctToFloat[1] returned ${ convert.degPctPctToFloat(input)[1] } for ${ input[1] }, expected ${ output[1] }`
+				);
+
+				assert(
+					Math.abs(res[2] - output[2]) < 1.0e-10,
+					`degPctPctToFloat[2] returned ${ convert.degPctPctToFloat(input)[2] } for ${ input[2] }, expected ${ output[2] }`
+				);
 			}
 		}
 	});
@@ -163,12 +179,18 @@ describe("floatToDegPctPct()", () => {
 		for (let rad = 0; rad <= Math.PI * 2.0; rad += 0.01) {
 			for (let float = 0; float <= 1.0; float += 0.01) {
 				const input = [rad, float, 1.0 - float];
-				const output = [rad / (Math.PI * 2.0) * 360.0, float * 100, 100 - float * 100];
+
+				const output = [
+					convert.radToDeg(rad),
+					convert.floatToPct(float),
+					convert.floatToPct(1.0 - float)
+				];
+
 				const res = convert.floatToDegPctPct(input);
 
-				assert(Math.abs(res[0] - output[0]) < 1.0e-10);
-				assert(Math.abs(res[1] - output[1]) < 1.0e-10);
-				assert(Math.abs(res[2] - output[2]) < 1.0e-10);
+				assert.strictEqual(res[0], output[0]);
+				assert.strictEqual(res[1], output[1]);
+				assert.strictEqual(res[2], output[2]);
 			}
 		}
 	});
