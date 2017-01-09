@@ -20,6 +20,12 @@ const DEG_TO_RAD = Math.PI / 180.0;
  * @type {number}
  */
 const RAD_TO_DEG = 180.0 / Math.PI;
+/**
+ * The full circle in radians
+ * @private
+ * @type {number}
+ */
+const TWO_PI = Math.PI * 2.0;
 
 
 
@@ -57,6 +63,31 @@ export function floatToPct(f) {
  */
 export function pctToFloat(i) {
 	return i * 0.01;
+}
+
+/**
+ * Returns the degree value representing f
+ * @param {number} f - The radian value
+ * @returns {int}
+ */
+export function radToDeg(f) {
+	f %= TWO_PI;
+	f = Math.sign(f) !== -1 ? f : f + TWO_PI;
+
+	return Math.round(f * RAD_TO_DEG);
+}
+
+/**
+ * Returns the radian value representing i
+ * @param {int} i - The degree value
+ * @returns {number}
+ */
+export function degToRad(i) {
+	let f = i * DEG_TO_RAD;
+
+	f %= TWO_PI;
+
+	return Math.sign(f) !== -1 ? f : f + TWO_PI;
 }
 
 
