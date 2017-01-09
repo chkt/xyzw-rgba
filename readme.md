@@ -47,6 +47,10 @@ Vector4RGBA
 
 -   [floatToInt](#floattoint)
 -   [intToFloat](#inttofloat)
+-   [floatToPct](#floattopct)
+-   [pctToFloat](#pcttofloat)
+-   [radToDeg](#radtodeg)
+-   [degToRad](#degtorad)
 -   [intIntIntToFloat](#intintinttofloat)
 -   [floatToIntIntInt](#floattointintint)
 -   [degPctPctToFloat](#degpctpcttofloat)
@@ -115,6 +119,46 @@ Returns the floating point value representing i
 **Parameters**
 
 -   `i` **int** The rgb8 value
+
+Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+
+## floatToPct
+
+Returns the percent value representing f
+
+**Parameters**
+
+-   `f` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The floating point value
+
+Returns **int** 
+
+## pctToFloat
+
+Returns the floating point value representing i
+
+**Parameters**
+
+-   `i` **int** The percent value
+
+Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+
+## radToDeg
+
+Returns the degree value representing f
+
+**Parameters**
+
+-   `f` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The radian value
+
+Returns **int** 
+
+## degToRad
+
+Returns the radian value representing i
+
+**Parameters**
+
+-   `i` **int** The degree value
 
 Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
 
