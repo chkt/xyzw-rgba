@@ -124,19 +124,24 @@ export default class Vector4RGBA extends Vector4 {
 
 	/**
 	 * Returns a css color string representation of the instance
+	 * @param {bool} [fast=false] - True if css string should be generated fast, false if generated string should be small
 	 * @returns {string}
 	 */
-	toCSS() {
+	toCSS(fast = false) {
 		const n = this.n;
+
+		const rgba = [
+			floatToInt(n[0]),
+			floatToInt(n[1]),
+			floatToInt(n[2]),
+			Math.clamp(n[3], 0.0, 1.0)
+		];
+
+		if (fast) return `rgba(${ rgba[0] },${ rgba[1] },${ rgba[2] },${ rgba[3] })`;
 
 		return css.stringify({
 			type : 'rgb',
-			components : [
-				floatToInt(n[0]),
-				floatToInt(n[1]),
-				floatToInt(n[2]),
-				Math.clamp(n[3], 0.0, 1.0)
-			]
+			components : rgba
 		});
 	}
 
