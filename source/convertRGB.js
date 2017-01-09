@@ -41,6 +41,24 @@ export function intToFloat(i) {
 	return i < 255 ? i * ONE_DIV_TWOFIFTYSIX : 1.0;
 }
 
+/**
+ * Returns the percent value representing f
+ * @param {number} f - The floating point value
+ * @returns {int}
+ */
+export function floatToPct(f) {
+	return Math.round(f * 100.0);
+}
+
+/**
+ * Returns the floating point value representing i
+ * @param {int} i - The percent value
+ * @returns {number}
+ */
+export function pctToFloat(i) {
+	return i * 0.01;
+}
+
 
 /**
  * Returns the floating point value representation of abc
