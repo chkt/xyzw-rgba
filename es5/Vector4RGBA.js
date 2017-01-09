@@ -59,7 +59,7 @@ var Vector4RGBA = function (_Vector) {
 
 			return css.stringify({
 				type: 'rgb',
-				components: [(0, _convertRGB.floatToInt)(n[0]), (0, _convertRGB.floatToInt)(n[1]), (0, _convertRGB.floatToInt)(n[2]), n[3]]
+				components: [(0, _convertRGB.floatToInt)(n[0]), (0, _convertRGB.floatToInt)(n[1]), (0, _convertRGB.floatToInt)(n[2]), _Math2.default.clamp(n[3], 0.0, 1.0)]
 			});
 		}
 

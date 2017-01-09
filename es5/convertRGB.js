@@ -72,7 +72,7 @@ function intToFloat(i) {
  * @returns {int}
  */
 function floatToPct(f) {
-  return _Math2.default.round(f * 100.0);
+  return _Math2.default.clamp(_Math2.default.round(f * 100.0), 0, 100);
 }
 
 /**
