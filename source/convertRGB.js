@@ -53,7 +53,7 @@ export function intToFloat(i) {
  * @returns {int}
  */
 export function floatToPct(f) {
-	return Math.round(f * 100.0);
+	return Math.clamp(Math.round(f * 100.0), 0, 100);
 }
 
 /**
