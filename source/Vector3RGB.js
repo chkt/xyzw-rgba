@@ -110,19 +110,24 @@ export default class Vector3RGB extends Vector3 {
 
 	/**
 	 * Returns a css representation of the instance
+	 * @param {bool} [fast=false] - True if string should be generated fast, false if generated string should be small
 	 * @returns {string}
 	 */
-	toCSS() {
+	toCSS(fast = false) {
 		const n = this.n;
+
+		const rgba = [
+			floatToInt(n[0]),
+			floatToInt(n[1]),
+			floatToInt(n[2]),
+			1.0
+		];
+
+		if (fast) return `rgb(${rgba[0]},${rgba[1]},${rgba[2]})`;
 
 		return css.stringify({
 			type : 'rgb',
-			components : [
-				floatToInt(n[0]),
-				floatToInt(n[1]),
-				floatToInt(n[2]),
-				1.0
-			]
+			components : rgba
 		});
 	}
 
