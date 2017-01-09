@@ -124,9 +124,9 @@ export function floatToIntIntInt([a, b, c]) {
  */
 export function degPctPctToFloat([a, b, c]) {
 	return [
-		a * DEG_TO_RAD,
-		b * 0.01,
-		c * 0.01
+		degToRad(a),
+		pctToFloat(b),
+		pctToFloat(c)
 	];
 }
 
@@ -137,8 +137,8 @@ export function degPctPctToFloat([a, b, c]) {
  */
 export function floatToDegPctPct([a, b, c]) {
 	return [
-		a * RAD_TO_DEG,
-		b * 100.0,
-		c * 100.0
+		radToDeg(a),
+		floatToPct(b),
+		floatToPct(c)
 	];
 }
