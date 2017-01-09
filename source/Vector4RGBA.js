@@ -135,7 +135,7 @@ export default class Vector4RGBA extends Vector4 {
 				floatToInt(n[0]),
 				floatToInt(n[1]),
 				floatToInt(n[2]),
-				n[3]
+				Math.clamp(n[3], 0.0, 1.0)
 			]
 		});
 	}
