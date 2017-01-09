@@ -32,6 +32,30 @@ describe("intToFloat()", () => {
 	});
 });
 
+describe("floatToPct()", () => {
+	it("should return the integer percent value corresponding to each floating point value input", () => {
+		const iv = 0.005 - Number.EPSILON;
+
+		for (let i = 0; i <= 100; i += 1) {
+			const f = i * 0.01;
+
+			assert.strictEqual(convert.floatToPct(f), i);
+			assert.strictEqual(convert.floatToPct(f - iv), i);
+			assert.strictEqual(convert.floatToPct(f + iv), i);
+		}
+	});
+});
+
+describe("pctToFloat()", () => {
+	it("should return the floating point value corresponding to each percent input", () => {
+		for (let i = 0; i < 255; i += 1) assert(Math.abs(convert.pctToFloat(i) - i / 100) < 1.0e-10, "not cleanly converting percents to floating point values");
+	});
+
+	it("should return 1.0 for the percent value 100", () => {
+		assert.strictEqual(1.0, convert.pctToFloat(100));
+	});
+});
+
 describe("floatToIntIntInt()", () => {
 	it("should return the rgb8 corresponding to each floating point value input", () => {
 		const step = 1.0 / 256.0;
