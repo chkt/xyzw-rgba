@@ -218,6 +218,26 @@ describe('Vector4RGBA', () => {
 
 			assert.strictEqual(rgba.toCSS(), 'rgba(255,128,64,0.5)');
 		});
+
+		it("should return clamped values for out of gamut values", () => {
+			const rgba = new Vector4RGBA([
+				-1.0,
+				-1.0,
+				-1.0,
+				-1.0
+			]);
+
+			assert.strictEqual(rgba.toCSS(), 'transparent');
+
+			rgba.define([
+				2.0,
+				2.0,
+				2.0,
+				2.0
+			]);
+
+			assert.strictEqual(rgba.toCSS(), '#fff');
+		});
 	});
 
 	describe('#toInt()', () => {
