@@ -6,17 +6,17 @@
 ![Language](https://img.shields.io/github/languages/top/chkt/xyzw-rgba)
 ![Size](https://img.shields.io/bundlephobia/min/xyzw-rgba)
 
-#xyzw-rgba
+# xyzw-rgba
 
 Color vectors and transforms
 
-##Install
+## Install
 
 ```sh
 yarn add xyzw-rgba
 ```
 
-###Use
+## Use
 
 xyzw-rgba is an extension of [xyzw](https://github.com/chkt/xyzw) providing
 methods to easily work with colors and convert them from and to common color formats.
