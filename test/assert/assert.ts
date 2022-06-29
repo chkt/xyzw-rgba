@@ -3,6 +3,7 @@ import * as vec3 from 'xyzw/dist/vector3';
 import * as vec4 from 'xyzw/dist/vector4';
 import { Hsl } from '../../source/hsl';
 import { Hsla } from '../../source/hsla';
+import { Lab } from '../../source/lab';
 
 
 export function assertEquals(actual:number, expected:number, e:number, message?:string) : void {
@@ -71,6 +72,22 @@ export function assertEqualsHsla(actual:Hsla, expected:Hsla, e:number, message?:
 		Number.isNaN(actual.hue) !== Number.isNaN(expected.hue) || Math.abs(expected.hue - actual.hue) > e ||
 		Number.isNaN(actual.saturation) !== Number.isNaN(expected.saturation) || Math.abs(expected.saturation - actual.saturation) > e ||
 		Number.isNaN(actual.lightness) !== Number.isNaN(expected.lightness) || Math.abs(expected.lightness - actual.lightness) > e ||
+		Number.isNaN(actual.alpha) !== Number.isNaN(expected.alpha) || Math.abs(expected.alpha - actual.alpha) > e
+	) {
+		throw new assert.AssertionError({
+			message,
+			actual,
+			expected,
+			operator : `!==[${ e }]`
+		});
+	}
+}
+
+export function assertEqualsLab(actual:Lab, expected:Lab, e:number, message?:string) : void {
+	if (
+		Number.isNaN(actual.lightness) !== Number.isNaN(expected.lightness) || Math.abs(expected.lightness - actual.lightness) > e ||
+		Number.isNaN(actual.a) !== Number.isNaN(expected.a) || Math.abs(expected.a - actual.a) > e ||
+		Number.isNaN(actual.b) !== Number.isNaN(expected.b) || Math.abs(expected.b - actual.b) > e ||
 		Number.isNaN(actual.alpha) !== Number.isNaN(expected.alpha) || Math.abs(expected.alpha - actual.alpha) > e
 	) {
 		throw new assert.AssertionError({

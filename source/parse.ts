@@ -14,6 +14,7 @@ export type CssRgbString = `rgb(${ string })`;
 export type CssRgbaString = CssRgbString | `rgba(${ string })`;
 export type CssHslString = `hsl(${ string })`;
 export type CssHslaString = CssHslString | `hsla(${ string })`;
+export type CssLabString = `lab(${ string })`;
 
 export type CssPrecision = 8 | 64;
 export type CssFormat = 2 | 4;
@@ -86,7 +87,7 @@ export function compressUint24<R extends Vector3>(res:R, rgb64:Vector3, profile:
 }
 
 
-function parseCssNumberOrPercent(value:string, percentScale:number = 0.01) : number {
+export function parseCssNumberOrPercent(value:string, percentScale:number = 0.01) : number {
 	if (!EXPR_CSS_NUMBER_OR_PERCENT.test(value)) throw new Error(`bad css number or percentage '${ value }'`);
 
 	return Number.parseFloat(value) * (value.endsWith('%') ? percentScale : 1.0);
@@ -142,4 +143,8 @@ export function isCssHslString(expr:string) : expr is CssHslString {
 
 export function isCssHslaString(expr:string) : expr is CssHslaString {
 	return (expr.startsWith('hsla(') || expr.startsWith('hsl(')) && expr.endsWith(')');
+}
+
+export function isCssLabString(expr:string) : expr is CssLabString {
+	return expr.startsWith('lab(') && expr.endsWith(')');
 }

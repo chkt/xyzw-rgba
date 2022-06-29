@@ -21,4 +21,5 @@ export * as rgb from './rgb';
 export * as rgba from './rgba';
 export * as hsl from './hsl';
 export * as hsla from './hsla';
+export * as lab from './lab';
 export * as css from './css';
