@@ -9,6 +9,7 @@ import * as rgba from '../source/rgba';
 import * as hsl from '../source/hsl';
 import * as hsla from '../source/hsla';
 import * as lab from '../source/lab';
+import * as lch from '../source/lch';
 import * as css from '../source/css';
 import * as xyzwRgba from '../source';
 
@@ -23,6 +24,7 @@ describe('xyzw-rgba', () => {
 		assert.deepStrictEqual(xyzwRgba.hsl, hsl);
 		assert.deepStrictEqual(xyzwRgba.hsla, hsla);
 		assert.deepStrictEqual(xyzwRgba.lab, lab);
+		assert.deepStrictEqual(xyzwRgba.lch, lch);
 		assert.deepStrictEqual(xyzwRgba.css, css);
 	});
 });

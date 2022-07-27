@@ -22,4 +22,5 @@ export * as rgba from './rgba';
 export * as hsl from './hsl';
 export * as hsla from './hsla';
 export * as lab from './lab';
+export * as lch from './lch';
 export * as css from './css';
