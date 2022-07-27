@@ -1,7 +1,7 @@
 {
 	"name": "xyzw-rgba",
 	"description": "RGB and RGBA Vectors, HSL and HSLA color transforms",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"license": "MIT",
 	"keywords": [
 		"vector",
@@ -44,13 +44,13 @@
 	"devDependencies": {
 		"@chkt/eslint-config": "^1.0.5",
 		"@types/mocha": "^9.1",
-		"@types/node": "^18.0",
-		"@typescript-eslint/eslint-plugin": "^5.29",
-		"@typescript-eslint/parser": "^5.29",
-		"eslint": "^8.18",
+		"@types/node": "^18.6",
+		"@typescript-eslint/eslint-plugin": "^5.31",
+		"@typescript-eslint/parser": "^5.31",
+		"eslint": "^8.20",
 		"mocha": "^10.0",
 		"nyc": "^15.1",
-		"ts-node": "^10.8",
+		"ts-node": "^10.9",
 		"typedoc": "^0.23",
 		"typescript": "^4.7"
 	}
