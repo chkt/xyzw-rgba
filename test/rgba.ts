@@ -161,6 +161,10 @@ describe('CssRgba', () => {
 		assert.deepStrictEqual(CssRgba('rgba(0%,50%,100%,75%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
 		assert.deepStrictEqual(CssRgba('rgba( 0%   50%   100%  /  75% )'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
 		assert.deepStrictEqual(CssRgba('rgba( 0   50%   255  /  0.75 )'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
+		assert.deepStrictEqual(CssRgba('rgba(0,128,255,-0.5)'), { x : 0.0, y : 0x80 / 0xff, z : 1.0, w : 0.0 });
+		assert.deepStrictEqual(CssRgba('rgba(0%,50%,100%,-75%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.0 });
+		assert.deepStrictEqual(CssRgba('rgba(0,128,255,1.5)'), { x : 0.0, y : 0x80 / 0xff, z : 1.0, w : 1.0 });
+		assert.deepStrictEqual(CssRgba('rgba(0%,50%,100%,175%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 1.0 });
 	});
 
 	it('should throw for invalid css rgba() strings', () => {
@@ -169,11 +173,9 @@ describe('CssRgba', () => {
 		assert.throws(() => CssRgba('rgba(-1,0,0,0)'), new Error("bad css color 'rgba(-1,0,0,0)'"));
 		assert.throws(() => CssRgba('rgba(0,-1,0,0)'), new Error("bad css color 'rgba(0,-1,0,0)'"));
 		assert.throws(() => CssRgba('rgba(0,0,-1,0)'), new Error("bad css color 'rgba(0,0,-1,0)'"));
-		assert.throws(() => CssRgba('rgba(0,0,0,-1)'), new Error("bad css color 'rgba(0,0,0,-1)'"));
 		assert.throws(() => CssRgba('rgba(256,0,0,0)'), new Error("bad css color 'rgba(256,0,0,0)'"));
 		assert.throws(() => CssRgba('rgba(0,256,0,0)'), new Error("bad css color 'rgba(0,256,0,0)'"));
 		assert.throws(() => CssRgba('rgba(0,0,256,0)'), new Error("bad css color 'rgba(0,0,256,0)'"));
-		assert.throws(() => CssRgba('rgba(0,0,0,1.1)'), new Error("bad css color 'rgba(0,0,0,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {
@@ -208,6 +210,10 @@ describe('cssRgba', () => {
 		assert.deepStrictEqual(cssRgba(v, 'rgba(0%,50%,100%,75%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
 		assert.deepStrictEqual(cssRgba(v, 'rgba( 0%   50%   100%  /  75% )'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
 		assert.deepStrictEqual(cssRgba(v, 'rgba( 0   50%   255  /  0.75 )'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.75 });
+		assert.deepStrictEqual(cssRgba(v, 'rgba(0,128,255,-0.5)'), { x : 0.0, y : 0x80 / 0xff, z : 1.0, w : 0.0 });
+		assert.deepStrictEqual(cssRgba(v, 'rgba(0%,50%,100%,-75%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 0.0 });
+		assert.deepStrictEqual(cssRgba(v, 'rgba(0,128,255,1.5)'), { x : 0.0, y : 0x80 / 0xff, z : 1.0, w : 1.0 });
+		assert.deepStrictEqual(cssRgba(v, 'rgba(0%,50%,100%,175%)'), { x : 0.0, y : 0x7f / 0xff, z : 1.0, w : 1.0 });
 	});
 
 	it('should throw for invalid css rgba() strings', () => {
@@ -221,11 +227,9 @@ describe('cssRgba', () => {
 		assert.throws(() => cssRgba(v, 'rgba(-1,0,0,0)'), new Error("bad css color 'rgba(-1,0,0,0)'"));
 		assert.throws(() => cssRgba(v, 'rgba(0,-1,0,0)'), new Error("bad css color 'rgba(0,-1,0,0)'"));
 		assert.throws(() => cssRgba(v, 'rgba(0,0,-1,0)'), new Error("bad css color 'rgba(0,0,-1,0)'"));
-		assert.throws(() => cssRgba(v, 'rgba(0,0,0,-1)'), new Error("bad css color 'rgba(0,0,0,-1)'"));
 		assert.throws(() => cssRgba(v, 'rgba(256,0,0,0)'), new Error("bad css color 'rgba(256,0,0,0)'"));
 		assert.throws(() => cssRgba(v, 'rgba(0,256,0,0)'), new Error("bad css color 'rgba(0,256,0,0)'"));
 		assert.throws(() => cssRgba(v, 'rgba(0,0,256,0)'), new Error("bad css color 'rgba(0,0,256,0)'"));
-		assert.throws(() => cssRgba(v, 'rgba(0,0,0,1.1)'), new Error("bad css color 'rgba(0,0,0,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {

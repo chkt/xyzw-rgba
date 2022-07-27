@@ -10,10 +10,11 @@ import {
 	UINT8_TO_PCT,
 	UINT8_TO_UNIT,
 	UNIT_TO_PCT,
+	createNumberOrPercentParser,
 	cssDefaults,
 	cssPrecision,
-	parseCssNumberOrPercent,
-	parseCssUnitInterval
+	parseCssAlpha,
+	parseCssLabLightness
 } from './parse';
 
 
@@ -35,13 +36,11 @@ const DELTA = 6.0 / 29.0;
 const DELTA_SQUARED_X3 = 3.0 * DELTA ** 2;
 const DIV_DELTA_SQUARED_X3 = 1.0 / DELTA_SQUARED_X3;
 const DELTA_CUBED = DELTA ** 3;
+const EPSILON = 1e-10;
 
+const { abs : absfn, max : maxfn, cbrt : cbrtfn } = Math;
+const parseAb = createNumberOrPercentParser({ percentScale : 1.25 });
 
-const absfn = Math.abs;
-const maxfn = Math.max;
-const cbrtfn = Math.cbrt;
-
-const epsilon = 1e-10;
 const v30 = vec3.Create();
 const v31 = vec3.Create();
 const v40 = vec4.Create();
@@ -115,7 +114,7 @@ function createTtoRgb(illuminant:vec3.Vector3) : mat3.Matrix3 {
 }
 
 
-export function equals(a:Lab, b:Lab, e:number = epsilon) : boolean {
+export function equals(a:Lab, b:Lab, e:number = EPSILON) : boolean {
 	return absfn(a.lightness - b.lightness) < e &&
 		absfn(a.a - b.a) < e &&
 		absfn(a.b - b.b) < e &&
@@ -209,10 +208,10 @@ export function cssLab<R extends Lab>(res:R, expr:CssLabString) : Lab {
 	const [ , l, a, b, alpha ] = match;
 
 	try {
-		res.lightness = maxfn(parseCssNumberOrPercent(l, 1.0), 0.0);
-		res.a = parseCssNumberOrPercent(a, 1.25);
-		res.b = parseCssNumberOrPercent(b, 1.25);
-		res.alpha = alpha !== undefined ? parseCssUnitInterval(alpha) : 1.0;
+		res.lightness = parseCssLabLightness(l);
+		res.a = parseAb(a);
+		res.b = parseAb(b);
+		res.alpha = alpha !== undefined ? parseCssAlpha(alpha) : 1.0;
 	}
 	catch (err) {
 		throw new Error(`bad css color '${ expr }'`);
@@ -225,16 +224,16 @@ export function toCss(lab:Lab, opts?:Partial<CssOptions>) : CssLabString {
 	let { lightness, a, b, alpha } = lab;
 
 	if (Number.isNaN(lightness + a + b + alpha)) throw new Error(`bad lab "${
-		lab.lightness.toFixed(2) } ${
-		lab.a.toFixed(2) } ${
-		lab.b.toFixed(2) } ${
-		lab.alpha.toFixed(2) }"`);
+		lightness.toFixed(2) } ${
+		a.toFixed(2) } ${
+		b.toFixed(2) } ${
+		alpha.toFixed(2) }"`);
 
 	lightness = maxfn(lightness, 0.0);
 	alpha = clamp(alpha, 0.0, 1.0);
 
 	const settings = { ...cssDefaults, ...opts };
-	const labDigits = Math.min(Math.max(settings.decimals, 0), CSS_MAX_DECIMALS);
+	const labDigits = clamp(settings.decimals, 0, CSS_MAX_DECIMALS);
 	let alphaDigits = labDigits;
 	let unit = '';
 

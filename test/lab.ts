@@ -35,7 +35,6 @@ describe('equals', () => {
 		assert.strictEqual(equals(a, { ...a, lightness : a.lightness + 0.1 }), false);
 		assert.strictEqual(equals(a, { ...a, a : a.a + 0.1 }), false);
 		assert.strictEqual(equals(a, { ...a, b : a.b + 0.1 }), false);
-		assert.strictEqual(equals(a, { ...a, b : a.b + 0.1 }), false);
 		assert.strictEqual(equals(a, { ...a, alpha : a.alpha + 0.1 }), false);
 		assert.strictEqual(equals(Create(Number.NaN), Create(Number.NaN)), false);
 		assert.strictEqual(equals(Create(0.0, Number.NaN), Create(0.0, Number.NaN)), false);
@@ -286,8 +285,10 @@ describe('CssLab', () => {
 		assert.deepStrictEqual(CssLab('lab(100 50 25 / 75%)'), { lightness : 100.0, a : 50.0, b : 25.0, alpha : 0.75 });
 		assert.deepStrictEqual(CssLab('lab(200 150 -150 / 0.75)'), { lightness : 200.0, a : 150.0, b : -150.0, alpha : 0.75 });
 		assert.deepStrictEqual(CssLab('lab(200% 150% -150% / 75%)'), { lightness : 200.0, a : 187.5, b : -187.5, alpha : 0.75 });
-		assert.deepStrictEqual(CssLab('lab(-200 150 -150 / 0.75)'), { lightness : 0.0, a : 150.0, b : -150.0, alpha : 0.75 });
-		assert.deepStrictEqual(CssLab('lab(-200% 150% -150% / 75%)'), { lightness : 0.0, a : 187.5, b : -187.5, alpha : 0.75 });
+		assert.deepStrictEqual(CssLab('lab(-200 150 -150 / -0.75)'), { lightness : 0.0, a : 150.0, b : -150.0, alpha : 0.0 });
+		assert.deepStrictEqual(CssLab('lab(-200% 150% -150% / -75%)'), { lightness : 0.0, a : 187.5, b : -187.5, alpha : 0.0 });
+		assert.deepStrictEqual(CssLab('lab(200 150 -150 / 2.0)'), { lightness : 200.0, a : 150.0, b : -150.0, alpha : 1.0 });
+		assert.deepStrictEqual(CssLab('lab(200% 150% -150% / 200%)'), { lightness : 200.0, a : 187.5, b : -187.5, alpha : 1.0 });
 	});
 
 	it('should throw for invalid lab() strings', () => {
@@ -295,7 +296,6 @@ describe('CssLab', () => {
 		assert.throws(() => CssLab('lab(a 0 0 / 0)'), new Error("bad css color 'lab(a 0 0 / 0)'"));
 		assert.throws(() => CssLab('lab(0 b 0 / 0)'), new Error("bad css color 'lab(0 b 0 / 0)'"));
 		assert.throws(() => CssLab('lab(0 0 c / 0)'), new Error("bad css color 'lab(0 0 c / 0)'"));
-		assert.throws(() => CssLab('lab(0 0 0 / d)'), new Error("bad css color 'lab(0 0 0 / d)'"));
 		assert.throws(() => CssLab('lab(0 0 0 / d)'), new Error("bad css color 'lab(0 0 0 / d)'"));
 		assert.throws(() => CssLab('lab(0a 0 0 / 0)'), new Error("bad css color 'lab(0a 0 0 / 0)'"));
 		assert.throws(() => CssLab('lab(0 0b 0 / 0)'), new Error("bad css color 'lab(0 0b 0 / 0)'"));
@@ -327,8 +327,10 @@ describe('cssLab', () => {
 		assert.deepStrictEqual(cssLab(lab, 'lab(100 50 25 / 75%)'), { lightness : 100.0, a : 50.0, b : 25.0, alpha : 0.75 });
 		assert.deepStrictEqual(cssLab(lab, 'lab(200 150 -150 / 0.75)'), { lightness : 200.0, a : 150.0, b : -150.0, alpha : 0.75 });
 		assert.deepStrictEqual(cssLab(lab, 'lab(200% 150% -150% / 75%)'), { lightness : 200.0, a : 187.5, b : -187.5, alpha : 0.75 });
-		assert.deepStrictEqual(cssLab(lab, 'lab(-200 150 -150 / 0.75)'), { lightness : 0.0, a : 150.0, b : -150.0, alpha : 0.75 });
-		assert.deepStrictEqual(cssLab(lab, 'lab(-200% 150% -150% / 75%)'), { lightness : 0.0, a : 187.5, b : -187.5, alpha : 0.75 });
+		assert.deepStrictEqual(cssLab(lab, 'lab(-200 150 -150 / -0.75)'), { lightness : 0.0, a : 150.0, b : -150.0, alpha : 0.0 });
+		assert.deepStrictEqual(cssLab(lab, 'lab(-200% 150% -150% / -75%)'), { lightness : 0.0, a : 187.5, b : -187.5, alpha : 0.0 });
+		assert.deepStrictEqual(cssLab(lab, 'lab(200 150 -150 / 2.0)'), { lightness : 200.0, a : 150.0, b : -150.0, alpha : 1.0 });
+		assert.deepStrictEqual(cssLab(lab, 'lab(200% 150% -150% / 200%)'), { lightness : 200.0, a : 187.5, b : -187.5, alpha : 1.0 });
 	});
 
 	it('should throw for invalid lab() strings', () => {
@@ -417,10 +419,11 @@ describe('copy', () => {
 	it('should assign a L*a*b* color to represent a copy', () => {
 		const a = Create(100.0, 80.0, -80.0, 0.5);
 		const b = Create();
-
-		copy(b, a);
+		const r = copy(b, a);
 
 		assert.deepStrictEqual(a, b);
+		assert.deepStrictEqual(a, r);
 		assert.notStrictEqual(a, b);
+		assert.strictEqual(b, r);
 	});
 });

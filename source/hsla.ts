@@ -15,9 +15,9 @@ import {
 	cssDefaults,
 	cssFormat,
 	cssPrecision,
+	parseCssAlpha,
 	parseCssAngle,
-	parseCssPercent,
-	parseCssUnitInterval
+	parseCssPercent
 } from './parse';
 import { ColorSpace, Transfer, linear } from './colorSpace';
 import * as hslApi from './hsl';
@@ -133,7 +133,7 @@ export function cssHslaAssignRgba<R extends vec4.Vector4>(
 			hue : parseCssAngle(h),
 			saturation : parseCssPercent(s),
 			lightness : parseCssPercent(l),
-			alpha : a !== undefined ? parseCssUnitInterval(a) : 1.0
+			alpha : a !== undefined ? parseCssAlpha(a) : 1.0
 		});
 	}
 	catch (err) {

@@ -1,8 +1,18 @@
 import { Vector3, clampScalar, multiplyAssignScalar, multiplyScalar } from 'xyzw/dist/vector3';
-import { AngleUnit, angle, angleUnit, interval } from './real';
+import { AngleUnit, angle, angleUnit, clamp, interval } from './real';
 import { round } from './vector3';
 import { ColorSpace, linear } from './colorSpace';
 
+
+interface ParseNumberOrPercentOptions {
+	percentScale : number;
+	clampMin : number;
+	clampMax : number;
+	assertMin : number;
+	assertMax : number;
+}
+
+type parseNumber = (value:string) => number;
 
 export interface HexOptions {
 	readonly hash : boolean;
@@ -59,6 +69,14 @@ export const UNIT_TO_UINT8 = 255.0;
 export const UINT8_TO_UNIT = 1.0 / UNIT_TO_UINT8;
 
 
+const parseNumberOrPercentDefaults:ParseNumberOrPercentOptions = {
+	percentScale : 0.01,
+	clampMin : Number.NEGATIVE_INFINITY,
+	clampMax : Number.POSITIVE_INFINITY,
+	assertMin : Number.NEGATIVE_INFINITY,
+	assertMax : Number.POSITIVE_INFINITY
+};
+
 export const hexDefaults:HexOptions = {
 	hash : true,
 	uppercase : false,
@@ -86,8 +104,42 @@ export function compressUint24<R extends Vector3>(res:R, rgb64:Vector3, profile:
 	));
 }
 
+export function createNumberOrPercentParser(opts?:Partial<ParseNumberOrPercentOptions>) : parseNumber {
+	const settings = { ...parseNumberOrPercentDefaults, ...opts };
 
-export function parseCssNumberOrPercent(value:string, percentScale:number = 0.01) : number {
+	return value => {
+		if (!EXPR_CSS_NUMBER_OR_PERCENT.test(value)) throw new Error(`bad css number or percentage '${ value }'`);
+
+		const n = clamp(
+			Number.parseFloat(value) * (value.endsWith('%') ? settings.percentScale : 1.0),
+			settings.clampMin,
+			settings.clampMax
+		);
+
+		if (
+			n < settings.assertMin ||
+			n > settings.assertMax
+		) throw new Error(`bad css number or percentage '${ value }'`);
+
+		return n;
+	};
+}
+
+export const parseCssLabLightness = createNumberOrPercentParser({
+	percentScale : 1.0,
+	clampMin : 0.0
+});
+
+export const parseCssAlpha = createNumberOrPercentParser({
+	percentScale : PCT_TO_UNIT,
+	clampMin : 0.0,
+	clampMax : 1.0
+});
+
+/**
+ * @deprecated use createNumberOrPercentParser instead
+ */
+function parseCssNumberOrPercent(value:string, percentScale:number = 0.01) : number {
 	if (!EXPR_CSS_NUMBER_OR_PERCENT.test(value)) throw new Error(`bad css number or percentage '${ value }'`);
 
 	return Number.parseFloat(value) * (value.endsWith('%') ? percentScale : 1.0);
@@ -99,14 +151,6 @@ export function parseCssUint8(value:string) : number {
 	if (res < 0.0 || res > 255.0) throw new Error(`bad css uint8 '${ value }'`);
 
 	return Math.round(res);
-}
-
-export function parseCssUnitInterval(value:string) : number {
-	const res = parseCssNumberOrPercent(value, PCT_TO_UNIT);
-
-	if (res < 0.0 || res > 1.0) throw new Error(`bad css unit interval '${ value }'`);
-
-	return res;
 }
 
 export function parseCssAngle(value:string) : number {

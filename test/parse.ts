@@ -5,9 +5,13 @@ import {
 	compressUint24,
 	expandUint24,
 	isCssHslString,
-	isCssHslaString, isCssRgbString, isCssRgbaString,
+	isCssHslaString,
+	isCssLabString,
+	isCssRgbString,
+	isCssRgbaString,
 	parseCssAngle,
-	parseCssPercent, parseCssUint8, parseCssUnitInterval
+	parseCssPercent,
+	parseCssUint8
 } from '../source/parse';
 import { assertEquals, assertEqualsVec3 } from './assert/assert';
 import { createColorSpace } from './mock/colorSpace';
@@ -112,50 +116,6 @@ describe('parseCssUint8', () => {
 		assert.throws(() => parseCssUint8('0 %'), new Error("bad css number or percentage '0 %'"));
 		assert.throws(() => parseCssUint8('-100%'), new Error("bad css uint8 '-100%'"));
 		assert.throws(() => parseCssUint8('101%'), new Error("bad css uint8 '101%'"));
-	});
-});
-
-describe('parseCssUnitInterval', () => {
-	it('should return the numerical value of a string', () => {
-		assert.strictEqual(parseCssUnitInterval('0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('0.0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('0.00'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('00.0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('.0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('+0.0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('-0.0'), -0.0);
-		assert.strictEqual(parseCssUnitInterval('0e0'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('0e5'), 0.0);
-
-		assert.strictEqual(parseCssUnitInterval('1'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('1.0'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('1.00'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('01.0'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('+1.0'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('1e0'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('0.1e1'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('10e-1'), 1.0);
-
-		assert.strictEqual(parseCssUnitInterval('0.5'), 0.5);
-
-		assert.strictEqual(parseCssUnitInterval('0%'), 0.0);
-		assert.strictEqual(parseCssUnitInterval('100%'), 1.0);
-		assert.strictEqual(parseCssUnitInterval('50%'), 0.5);
-		assert.strictEqual(parseCssUnitInterval('55.5%'), 0.555);
-	});
-
-	it('should throw for invalid values', () => {
-		assert.throws(() => parseCssUnitInterval('foo'), new Error("bad css number or percentage 'foo'"));
-		assert.throws(() => parseCssUnitInterval('0.'), new Error("bad css number or percentage '0.'"));
-		assert.throws(() => parseCssUnitInterval('0.0.0'), new Error("bad css number or percentage '0.0.0'"));
-		assert.throws(() => parseCssUnitInterval('+-0'), new Error("bad css number or percentage '+-0'"));
-		assert.throws(() => parseCssUnitInterval('-+0'), new Error("bad css number or percentage '-+0'"));
-		assert.throws(() => parseCssUnitInterval('0e1.0'), new Error("bad css number or percentage '0e1.0'"));
-		assert.throws(() => parseCssUnitInterval('-1.0'), new Error("bad css unit interval '-1.0'"));
-		assert.throws(() => parseCssUnitInterval('2.0'), new Error("bad css unit interval '2.0'"));
-		assert.throws(() => parseCssUnitInterval('0 %'), new Error("bad css number or percentage '0 %'"));
-		assert.throws(() => parseCssUnitInterval('-100%'), new Error("bad css unit interval '-100%'"));
-		assert.throws(() => parseCssUnitInterval('101%'), new Error("bad css unit interval '101%'"));
 	});
 });
 
@@ -287,5 +247,16 @@ describe('isCssHslaString', () => {
 		assert.strictEqual(isCssHslaString('hsla()'), true);
 		assert.strictEqual(isCssHslaString('hsl()'), true);
 		assert.strictEqual(isCssHslaString('hsla(0,0%,0%,0)'), true);
+	});
+});
+
+describe('isCssLabString', () => {
+	it('should return true for css lab() color wrappers', () => {
+		assert.strictEqual(isCssLabString('foo'), false);
+		assert.strictEqual(isCssLabString('lab(foo'), false);
+		assert.strictEqual(isCssLabString('labfoo)'), false);
+		assert.strictEqual(isCssLabString('lab()'), true);
+		assert.strictEqual(isCssLabString('lab(foo)'), true);
+		assert.strictEqual(isCssLabString('lab(100 -50 50 / 0.5)'), true);
 	});
 });

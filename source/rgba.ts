@@ -12,7 +12,13 @@ import {
 	UINT8_TO_PCT, UINT8_TO_UNIT,
 	UNIT_TO_PCT,
 	UNIT_TO_UINT8,
-	cssDefaults, cssFormat, cssPrecision, expandUint24, hexDefaults, parseCssUint8, parseCssUnitInterval
+	cssDefaults,
+	cssFormat,
+	cssPrecision,
+	expandUint24,
+	hexDefaults,
+	parseCssAlpha,
+	parseCssUint8
 } from './parse';
 import { ColorSpace, linear } from './colorSpace';
 
@@ -96,7 +102,7 @@ export function cssRgba<R extends vec4.Vector4>(
 		res.x = parseCssUint8(r);
 		res.y = parseCssUint8(g);
 		res.z = parseCssUint8(b);
-		res.w = a !== undefined ? parseCssUnitInterval(a) : 1.0;
+		res.w = a !== undefined ? parseCssAlpha(a) : 1.0;
 	}
 	catch (err) {
 		throw new Error(`bad css color '${ expr }'`);

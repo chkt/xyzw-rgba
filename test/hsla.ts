@@ -342,6 +342,10 @@ describe('CssHsla', () => {
 		assertEquals(CssHsla('hsla( 180deg , 100% , 50% , 0.5 )'), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
 		assertEquals(CssHsla(`hsla(${ Math.PI }rad 100% 50%/0.5)`), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
 		assertEquals(CssHsla('hsla( 0.5turn   100%   50% / 0.5 )'), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
+		assertEquals(CssHsla('hsla(0 0% 100%/-0.5)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 0.0 }, epsilon);
+		assertEquals(CssHsla('hsla(0 0% 100%/-50%)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 0.0 }, epsilon);
+		assertEquals(CssHsla('hsla(0 0% 100%/1.5)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 1.0 }, epsilon);
+		assertEquals(CssHsla('hsla(0 0% 100%/150%)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 1.0 }, epsilon);
 	});
 
 	it('should throw for invalid hsla() strings', () => {
@@ -349,14 +353,10 @@ describe('CssHsla', () => {
 		assert.throws(() => CssHsla('hsla(a,b,c,d)'), new Error("bad css color 'hsla(a,b,c,d)'"));
 		assert.throws(() => CssHsla('hsla(0,0,0%,0)'), new Error("bad css color 'hsla(0,0,0%,0)'"));
 		assert.throws(() => CssHsla('hsla(0,0%,0,0)'), new Error("bad css color 'hsla(0,0%,0,0)'"));
-		// assert.throws(() => CssHsla('hsla(-1,0%,0%,0)'), new Error("bad css color 'hsla(-1,0%,0%,0)'"));
 		assert.throws(() => CssHsla('hsla(0,-1,0%,0)'), new Error("bad css color 'hsla(0,-1,0%,0)'"));
 		assert.throws(() => CssHsla('hsla(0,0%,-1,0)'), new Error("bad css color 'hsla(0,0%,-1,0)'"));
-		assert.throws(() => CssHsla('hsla(0,0%,0%,-1)'), new Error("bad css color 'hsla(0,0%,0%,-1)'"));
-		// assert.throws(() => CssHsla('hsla(361,0%,0%,0)'), new Error("bad css color 'hsla(-361,0%,0%,0)'"));
 		assert.throws(() => CssHsla('hsla(0,101%,0%,0)'), new Error("bad css color 'hsla(0,101%,0%,0)'"));
 		assert.throws(() => CssHsla('hsla(0,0%,101%,0)'), new Error("bad css color 'hsla(0,0%,101%,0)'"));
-		assert.throws(() => CssHsla('hsla(0,0%,0%,1.1)'), new Error("bad css color 'hsla(0,0%,0%,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {
@@ -394,6 +394,10 @@ describe('cssHsla', () => {
 		assertEquals(cssHsla(color, 'hsla( 180deg , 100% , 50% , 0.5 )'), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
 		assertEquals(cssHsla(color, `hsla(${ Math.PI }rad 100% 50%/0.5)`), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
 		assertEquals(cssHsla(color, 'hsla( 0.5turn   100%   50% / 0.5 )'), { hue : Math.PI, saturation : 1.0, lightness : 0.5, alpha : 0.5 }, epsilon);
+		assertEquals(cssHsla(color, 'hsla(0 0% 100%/-0.5)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 0.0 }, epsilon);
+		assertEquals(cssHsla(color, 'hsla(0 0% 100%/-50%)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 0.0 }, epsilon);
+		assertEquals(cssHsla(color, 'hsla(0 0% 100%/1.5)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 1.0 }, epsilon);
+		assertEquals(cssHsla(color, 'hsla(0 0% 100%/150%)'), { hue : 0.0, saturation : 0.0, lightness : 1.0, alpha : 1.0 }, epsilon);
 	});
 
 	it('should throw for invalid hsla() strings', () => {
@@ -403,14 +407,10 @@ describe('cssHsla', () => {
 		assert.throws(() => cssHsla(color, 'hsla(a,b,c,d)'), new Error("bad css color 'hsla(a,b,c,d)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,0,0%,0)'), new Error("bad css color 'hsla(0,0,0%,0)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,0%,0,0)'), new Error("bad css color 'hsla(0,0%,0,0)'"));
-		// assert.throws(() => cssHsla(color, 'hsla(-1,0%,0%,0)'), new Error("bad css color 'hsla(-1,0%,0%,0)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,-1,0%,0)'), new Error("bad css color 'hsla(0,-1,0%,0)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,0%,-1,0)'), new Error("bad css color 'hsla(0,0%,-1,0)'"));
-		assert.throws(() => cssHsla(color, 'hsla(0,0%,0%,-1)'), new Error("bad css color 'hsla(0,0%,0%,-1)'"));
-		// assert.throws(() => cssHsla(color, 'hsla(361,0%,0%,0)'), new Error("bad css color 'hsla(-361,0%,0%,0)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,101%,0%,0)'), new Error("bad css color 'hsla(0,101%,0%,0)'"));
 		assert.throws(() => cssHsla(color, 'hsla(0,0%,101%,0)'), new Error("bad css color 'hsla(0,0%,101%,0)'"));
-		assert.throws(() => cssHsla(color, 'hsla(0,0%,0%,1.1)'), new Error("bad css color 'hsla(0,0%,0%,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {
@@ -442,6 +442,10 @@ describe('CssHslaToRgba', () => {
 		assertEqualsVec4(CssHslaToRgba('hsla( 180deg , 100% , 50% , 0.5 )'), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
 		assertEqualsVec4(CssHslaToRgba(`hsla(${ Math.PI }rad 100% 50%/0.5)`), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
 		assertEqualsVec4(CssHslaToRgba('hsla( 0.5turn   100%   50% / 0.5 )'), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
+		assertEqualsVec4(CssHslaToRgba('hsla(0 0% 100%/-0.5)'), { x : 1.0, y : 1.0, z : 1.0, w : 0.0 }, epsilon);
+		assertEqualsVec4(CssHslaToRgba('hsla(0 0% 100%/-50%)'), { x : 1.0, y : 1.0, z : 1.0, w : 0.0 }, epsilon);
+		assertEqualsVec4(CssHslaToRgba('hsla(0 0% 100%/1.5)'), { x : 1.0, y : 1.0, z : 1.0, w : 1.0 }, epsilon);
+		assertEqualsVec4(CssHslaToRgba('hsla(0 0% 100%/150%)'), { x : 1.0, y : 1.0, z : 1.0, w : 1.0 }, epsilon);
 	});
 
 	it('should throw for invalid hsla() strings', () => {
@@ -449,14 +453,10 @@ describe('CssHslaToRgba', () => {
 		assert.throws(() => CssHslaToRgba('hsla(a,b,c,d)'), new Error("bad css color 'hsla(a,b,c,d)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,0,0%,0)'), new Error("bad css color 'hsla(0,0,0%,0)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,0%,0,0)'), new Error("bad css color 'hsla(0,0%,0,0)'"));
-		// assert.throws(() => CssHslaToRgba('hsla(-1,0%,0%,0)'), new Error("bad css color 'hsla(-1,0%,0%,0)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,-1,0%,0)'), new Error("bad css color 'hsla(0,-1,0%,0)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,0%,-1,0)'), new Error("bad css color 'hsla(0,0%,-1,0)'"));
-		assert.throws(() => CssHslaToRgba('hsla(0,0%,0%,-1)'), new Error("bad css color 'hsla(0,0%,0%,-1)'"));
-		// assert.throws(() => CssHslaToRgba('hsla(361,0%,0%,0)'), new Error("bad css color 'hsla(-361,0%,0%,0)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,101%,0%,0)'), new Error("bad css color 'hsla(0,101%,0%,0)'"));
 		assert.throws(() => CssHslaToRgba('hsla(0,0%,101%,0)'), new Error("bad css color 'hsla(0,0%,101%,0)'"));
-		assert.throws(() => CssHslaToRgba('hsla(0,0%,0%,1.1)'), new Error("bad css color 'hsla(0,0%,0%,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {
@@ -494,6 +494,10 @@ describe('cssHslAssignRgb', () => {
 		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla( 180deg , 100% , 50% , 0.5 )'), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
 		assertEqualsVec4(cssHslaAssignRgba(v, `hsla(${ Math.PI }rad 100% 50%/0.5)`), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
 		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla( 0.5turn   100%   50% / 0.5 )'), { x : 0.0, y : 1.0, z : 1.0, w : 0.5 }, epsilon);
+		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla(0 0% 100%/-0.5)'), { x : 1.0, y : 1.0, z : 1.0, w : 0.0 }, epsilon);
+		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla(0 0% 100%/-50%)'), { x : 1.0, y : 1.0, z : 1.0, w : 0.0 }, epsilon);
+		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla(0 0% 100%/1.5)'), { x : 1.0, y : 1.0, z : 1.0, w : 1.0 }, epsilon);
+		assertEqualsVec4(cssHslaAssignRgba(v, 'hsla(0 0% 100%/150%)'), { x : 1.0, y : 1.0, z : 1.0, w : 1.0 }, epsilon);
 	});
 
 	it('should throw for invalid hsla() strings', () => {
@@ -503,14 +507,10 @@ describe('cssHslAssignRgb', () => {
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(a,b,c,d)'), new Error("bad css color 'hsla(a,b,c,d)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0,0%,0)'), new Error("bad css color 'hsla(0,0,0%,0)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0%,0,0)'), new Error("bad css color 'hsla(0,0%,0,0)'"));
-		// assert.throws(() => cssHslaAssignRgba(v, 'hsla(-1,0%,0%,0)'), new Error("bad css color 'hsla(-1,0%,0%,0)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,-1,0%,0)'), new Error("bad css color 'hsla(0,-1,0%,0)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0%,-1,0)'), new Error("bad css color 'hsla(0,0%,-1,0)'"));
-		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0%,0%,-1)'), new Error("bad css color 'hsla(0,0%,0%,-1)'"));
-		// assert.throws(() => cssHslaAssignRgba(v, 'hsla(361,0%,0%,0)'), new Error("bad css color 'hsla(-361,0%,0%,0)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,101%,0%,0)'), new Error("bad css color 'hsla(0,101%,0%,0)'"));
 		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0%,101%,0)'), new Error("bad css color 'hsla(0,0%,101%,0)'"));
-		assert.throws(() => cssHslaAssignRgba(v, 'hsla(0,0%,0%,1.1)'), new Error("bad css color 'hsla(0,0%,0%,1.1)'"));
 	});
 
 	it('should apply color conversions', () => {
