@@ -22,7 +22,7 @@ xyzw-rgba is an extension of [xyzw](https://github.com/chkt/xyzw) providing
 methods to easily work with colors and convert them from and to common color formats.
 # Modules
 ## colorSpace
-[`./source/colorSpace.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/colorSpace.ts#L1)
+[`./source/colorSpace.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/colorSpace.ts#L1)
 ### Interfaces
 ```ts
 interface ColorSpace {
@@ -49,7 +49,7 @@ function gamma(factor:number = 2.2) : ColorSpace;
 function identity<R extends Vector3>(r:R, v:Vector3) : R;
 ```
 ## css
-[`./source/css.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/css.ts#L1)
+[`./source/css.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/css.ts#L1)
 ### Enumerations
 ```ts
 const enum cssStringifyMode {
@@ -85,7 +85,7 @@ function toRgb(expr:string, opts?:Partial<CssParseOptions<string>>) : vec3.Vecto
 function toRgba(expr:string, opts?:Partial<Omit<CssParseOptions<string>, "matte">>) : vec4.Vector4;
 ```
 ## cssColors
-[`./source/cssColors.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/cssColors.ts#L1)
+[`./source/cssColors.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/cssColors.ts#L1)
 ### Variables
 ```ts
 const css1Colors:NamedCssColors;
@@ -94,7 +94,7 @@ const css3Colors:NamedCssColors;
 const css4Colors:NamedCssColors;
 ```
 ## hsl
-[`./source/hsl.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/hsl.ts#L1)
+[`./source/hsl.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/hsl.ts#L1)
 ### Interfaces
 ```ts
 interface Hsl {
@@ -126,7 +126,7 @@ function toCss(hsl:Hsl, profile?:ColorSpace, opts?:Partial<CssOptions>) : CssHsl
 function toRgb(hsl:Hsl, transfer?:Transfer) : vec3.Vector3;
 ```
 ## hsla
-[`./source/hsla.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/hsla.ts#L1)
+[`./source/hsla.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/hsla.ts#L1)
 ### Interfaces
 ```ts
 interface Hsla extends Hsl {
@@ -154,7 +154,7 @@ function toCss(hsla:Hsla, profile?:ColorSpace, opts?:Partial<CssOptions>) : CssH
 function toRgba(hsla:Hsla, transfer?:Transfer) : vec4.Vector4;
 ```
 ## index
-[`./source/index.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/index.ts#L1)
+[`./source/index.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/index.ts#L1)
 ### References
 ```ts
 export * as conversion from "./colorSpace";
@@ -162,6 +162,7 @@ export * as css from "./css";
 export * as hsl from "./hsl";
 export * as hsla from "./hsla";
 export * as lab from "./lab";
+export * as lch from "./lch";
 export {
   CssFormat,
   CssHslString,
@@ -184,7 +185,7 @@ export * as vector3 from "./vector3";
 export * as vector4 from "./vector4";
 ```
 ## lab
-[`./source/lab.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/lab.ts#L1)
+[`./source/lab.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/lab.ts#L1)
 ### Interfaces
 ```ts
 interface Lab {
@@ -209,13 +210,41 @@ function assign<R extends Lab>(res:R, lightness:number = 100.0, a:number = 0.0, 
 function assignRgba<R extends Vector4>(res:R, lab:Lab, illuminant:Vector3 = d50, compress:Transfer = identity) : R;
 function copy<R extends Lab>(res:R, lab:Lab) : R;
 function cssLab<R extends Lab>(res:R, expr:`lab(${ string })`) : Lab;
-function equals(a:Lab, b:Lab, e:number = epsilon) : boolean;
+function equals(a:Lab, b:Lab, e:number = EPSILON) : boolean;
 function rgba<R extends Lab>(res:R, rgba64:Vector4, illuminant:Vector3 = d50, expand:Transfer = identity) : R;
 function toCss(lab:Lab, opts?:Partial<CssOptions>) : CssLabString;
 function toRgba(lab:Lab, illuminant?:Vector3, compress?:Transfer) : vec4.Vector4;
 ```
+## lch
+[`./source/lch.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/lch.ts#L1)
+### Interfaces
+```ts
+interface Lch {
+  alpha : number;
+  chroma : number;
+  hue : number;
+  lightness : number;
+}
+```
+### Functions
+```ts
+function Copy(lch:Lch) : Lch;
+function Create(lightness:number = 100.0, chroma:number = 0.0, hue:number = 0.0, alpha:number = 1.0) : Lch;
+function CssLch(expr:`lch(${ string })`) : Lch;
+function Lab(color:Lab) : Lch;
+function assign<R extends Lch>(res:R, lightness:number = 100.0, chroma:number = 0.0, hue:number = 0.0, alpha:number = 1.0) : R;
+function assignLab<R extends Lab>(res:R, lch:Lch) : R;
+function copy<R extends Lch>(res:R, lch:Lch) : R;
+function cssLch<R extends Lch>(res:R, expr:`lch(${ string })`) : R;
+function equals(a:Lch, b:Lch, e:number = EPSILON) : boolean;
+function isChromaHuePowerless(lch:Lch, e:number = EPSILON) : boolean;
+function isHuePowerless(lch:Lch, e:number = EPSILON) : boolean;
+function lab<R extends Lch>(res:R, color:Lab) : R;
+function toCss(lch:Lch, opts?:Partial<CssOptions>) : CssLchString;
+function toLab(lch:Lch) : labApi.Lab;
+```
 ## named
-[`./source/named.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/named.ts#L1)
+[`./source/named.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/named.ts#L1)
 ### Type Aliases
 ```ts
 type CssColor = HashString | CssRgbString | CssRgbaString | CssHslString | CssHslaString;
@@ -230,7 +259,7 @@ function findNameOfVec3(map:Readonly<Record<string, Vector4>>, rgb64:Vector3) : 
 function findNameOfVec4(map:Readonly<Record<string, Vector4>>, rgba64:Vector4) : string | undefined;
 ```
 ## parse
-[`./source/parse.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/parse.ts#L1)
+[`./source/parse.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/parse.ts#L1)
 ### Enumerations
 ```ts
 const enum cssFormat {
@@ -263,6 +292,7 @@ type CssFormat = 2 | 4;
 type CssHslString = `hsl(${ string })`;
 type CssHslaString = CssHslString | `hsla(${ string })`;
 type CssLabString = `lab(${ string })`;
+type CssLchString = `lch(${ string })`;
 type CssPrecision = 8 | 64;
 type CssRgbString = `rgb(${ string })`;
 type CssRgbaString = CssRgbString | `rgba(${ string })`;
@@ -289,20 +319,22 @@ const hexDefaults:HexOptions;
 ### Functions
 ```ts
 function compressUint24<R extends Vector3>(res:R, rgb64:Vector3, profile:ColorSpace = linear) : R;
+function createNumberOrPercentParser(opts?:Partial<ParseNumberOrPercentOptions>) : parseNumber;
 function expandUint24<R extends Vector3>(res:R, rgb8:Vector3, profile:ColorSpace = linear) : R;
 function isCssHslString(expr:string) : expr is `hsl(${ string })`;
 function isCssHslaString(expr:string) : expr is CssHslaString;
 function isCssLabString(expr:string) : expr is `lab(${ string })`;
+function isCssLchString(expr:string) : expr is `lch(${ string })`;
 function isCssRgbString(expr:string) : expr is `rgb(${ string })`;
 function isCssRgbaString(expr:string) : expr is CssRgbaString;
+function parseCssAlpha(value:string) : number;
 function parseCssAngle(value:string) : number;
-function parseCssNumberOrPercent(value:string, percentScale:number = 0.01) : number;
+function parseCssLabLightness(value:string) : number;
 function parseCssPercent(value:string) : number;
 function parseCssUint8(value:string) : number;
-function parseCssUnitInterval(value:string) : number;
 ```
 ## real
-[`./source/real.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/real.ts#L1)
+[`./source/real.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/real.ts#L1)
 ### Enumerations
 ```ts
 const enum angleUnit {
@@ -325,7 +357,7 @@ function interval(n:number, a:number, b:number) : number;
 function toFixed(n:number, max:number = 0) : string;
 ```
 ## rgb
-[`./source/rgb.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/rgb.ts#L1)
+[`./source/rgb.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/rgb.ts#L1)
 ### Functions
 ```ts
 function CssRgb(expr:`rgb(${ string })`, profile?:ColorSpace) : Vector3;
@@ -339,7 +371,7 @@ function toUint24(rgb64:Vector3, profile?:ColorSpace) : number;
 function uint24<R extends Vector3>(res:R, value:number, profile?:ColorSpace) : R;
 ```
 ## rgba
-[`./source/rgba.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/rgba.ts#L1)
+[`./source/rgba.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/rgba.ts#L1)
 ### Functions
 ```ts
 function CssRgba(expr:CssRgbaString, profile?:ColorSpace) : vec4.Vector4;
@@ -350,7 +382,7 @@ function toCss(rgba64:Vector4, profile:ColorSpace = linear, opts?:Partial<CssOpt
 function toHex32(rgba64:Vector4, profile:ColorSpace = linear, opts?:Partial<HexOptions>) : string;
 ```
 ## vector3
-[`./source/vector3.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/vector3.ts#L1)
+[`./source/vector3.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/vector3.ts#L1)
 ### Type Aliases
 ```ts
 type binary11 = (a:number, b:number) => number;
@@ -359,52 +391,52 @@ type unary1 = (n:number) => number;
 ### Functions
 ```ts
 function Align(v:Vector3, interval?:number, threshold?:number) : Vector3;
-function Ceil(v:Vector3) : Vector3;
+function Ceil(v:Vector3) : Vector3;  // ceil(v⃗ )
 function Clamp(v:Vector3, a:number, b:number) : Vector3;
-function Floor(v:Vector3) : Vector3;
+function Floor(v:Vector3) : Vector3;  // floor(v⃗ )
 function Matte(base:Vector3, fill:Vector4) : Vector3;
-function Max(v:Vector3, n:number) : Vector3;
-function Min(v:Vector3, n:number) : Vector3;
+function Max(v:Vector3, n:number) : Vector3;  // max(v⃗, n)
+function Min(v:Vector3, n:number) : Vector3;  // min(v⃗, n)
 function Mono(n:number = 1.0) : Vector3;
-function Round(v:Vector3) : Vector3;
+function Round(v:Vector3) : Vector3;  // round(v⃗ )
 function align<R extends Vector3>(r:R, v:Vector3, interval:number = 1.0, threshold:number = 0.5) : R;
-function ceil<R extends Vector3>(r:R, v:Vector3) : R;
+function ceil<R extends Vector3>(r:R, v:Vector3) : R;  // r⃗ = ceil(v⃗ )
 function clamp<R extends Vector3>(r:R, v:Vector3, a:number, b:number) : R;
-function floor<R extends Vector3>(r:R, v:Vector3) : R;
+function floor<R extends Vector3>(r:R, v:Vector3) : R;  // r⃗ = floor(v⃗ )
 function matte<R extends Vector3>(r:R, base:Vector3, fill:Vector4) : R;
-function max<R extends Vector3>(r:R, v:Vector3, n:number) : R;
-function min<R extends Vector3>(r:R, v:Vector3, n:number) : R;
+function max<R extends Vector3>(r:R, v:Vector3, n:number) : R;  // r⃗ = max(v⃗, n)
+function min<R extends Vector3>(r:R, v:Vector3, n:number) : R;  // r⃗ = min(v⃗, n)
 function mono<R extends Vector3>(r:R, n:number = 1.0) : Vector3;
-function round<R extends Vector3>(r:R, v:Vector3) : R;
+function round<R extends Vector3>(r:R, v:Vector3) : R;  // r⃗ = round(v⃗ )
 function toString(v:Vector3, decimals:number = 3) : string;
 ```
 ## vector4
-[`./source/vector4.ts`](https://github.com/chkt/xyzw-rgba/blob/ab8f0a1/source/vector4.ts#L1)
+[`./source/vector4.ts`](https://github.com/chkt/xyzw-rgba/blob/3dccf8b/source/vector4.ts#L1)
 ### Functions
 ```ts
 function Align(v:Vector4, interval?:number, threshold?:number) : Vector4;
-function Ceil(v:Vector4) : Vector4;
+function Ceil(v:Vector4) : Vector4;  // ceil(v⃗ )
 function Clamp(v:Vector4, a:number, b:number) : Vector4;  // min(max(v⃗, min(a, b)), max(a, b))
 function DemultiplyAlpha(v:Vector4) : Vector4;
-function Floor(v:Vector4) : Vector4;
-function Max(v:Vector4, n:number) : Vector4;
-function Min(v:Vector4, n:number) : Vector4;
+function Floor(v:Vector4) : Vector4;  // floor(v⃗ )
+function Max(v:Vector4, n:number) : Vector4;  // max(v⃗, n)
+function Min(v:Vector4, n:number) : Vector4;  // min(v⃗, n)
 function MultiplyAlpha(v:Vector4) : Vector4;
-function Round(v:Vector4) : Vector4;
+function Round(v:Vector4) : Vector4;  // round(v⃗ )
 function align<R extends Vector4>(r:R, v:Vector4, interval:number = 1.0, threshold:number = 0.5) : R;
 function alignAssignAlpha<R extends Vector4>(v:R, interval:number = 1.0, threshold:number = 0.5) : R;
 function assignAlpha<R extends Vector4>(v:R, n:number) : R;
-function ceil<R extends Vector4>(r:R, v:Vector4) : R;
+function ceil<R extends Vector4>(r:R, v:Vector4) : R;  // r⃗ = ceil(v⃗ )
 function clamp<R extends Vector4>(r:R, v:Vector4, a:number, b:number) : R;  // r⃗ = min(max(v⃗, min(a, b)), max(a, b))
 function clampAssignAlpha<R extends Vector4>(v:R, a:number, b:number) : R;
 function demultiplyAlpha<R extends Vector4>(r:R, v:Vector4) : R;
 function demultiplyAssignAlpha<R extends Vector4>(v:R) : R;
-function floor<R extends Vector4>(r:R, v:Vector4) : R;
+function floor<R extends Vector4>(r:R, v:Vector4) : R;  // r⃗ = floor(v⃗ )
 function hadamardAssignAlpha<R extends Vector4>(v:R, n:number) : R;
-function max<R extends Vector4>(r:R, v:Vector4, n:number) : R;
-function min<R extends Vector4>(r:R, v:Vector4, n:number) : R;
+function max<R extends Vector4>(r:R, v:Vector4, n:number) : R;  // r⃗ = max(v⃗, n)
+function min<R extends Vector4>(r:R, v:Vector4, n:number) : R;  // r⃗ = min(v⃗, n)
 function multiplyAlpha<R extends Vector4>(r:R, v:Vector4) : R;
 function multiplyAssignAlpha<R extends Vector4>(v:R) : R;
-function round<R extends Vector4>(r:R, v:Vector4) : R;
+function round<R extends Vector4>(r:R, v:Vector4) : R;  // r⃗ = round(v⃗ )
 function toString(v:Vector4, decimals:number = 3) : string;
 ```
