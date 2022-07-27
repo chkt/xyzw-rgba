@@ -25,6 +25,7 @@ export type CssRgbaString = CssRgbString | `rgba(${ string })`;
 export type CssHslString = `hsl(${ string })`;
 export type CssHslaString = CssHslString | `hsla(${ string })`;
 export type CssLabString = `lab(${ string })`;
+export type CssLchString = `lch(${ string })`;
 
 export type CssPrecision = 8 | 64;
 export type CssFormat = 2 | 4;
@@ -191,4 +192,8 @@ export function isCssHslaString(expr:string) : expr is CssHslaString {
 
 export function isCssLabString(expr:string) : expr is CssLabString {
 	return expr.startsWith('lab(') && expr.endsWith(')');
+}
+
+export function isCssLchString(expr:string) : expr is CssLchString {
+	return expr.startsWith('lch(') && expr.endsWith(')');
 }

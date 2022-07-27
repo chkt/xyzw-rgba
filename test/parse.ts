@@ -7,6 +7,7 @@ import {
 	isCssHslString,
 	isCssHslaString,
 	isCssLabString,
+	isCssLchString,
 	isCssRgbString,
 	isCssRgbaString,
 	parseCssAngle,
@@ -258,5 +259,16 @@ describe('isCssLabString', () => {
 		assert.strictEqual(isCssLabString('lab()'), true);
 		assert.strictEqual(isCssLabString('lab(foo)'), true);
 		assert.strictEqual(isCssLabString('lab(100 -50 50 / 0.5)'), true);
+	});
+});
+
+describe('isCssLchString', () => {
+	it('should return true for css lch() color wrappers', () => {
+		assert.strictEqual(isCssLchString('foo'), false);
+		assert.strictEqual(isCssLchString('lch(foo'), false);
+		assert.strictEqual(isCssLchString('lchfoo)'), false);
+		assert.strictEqual(isCssLchString('lch()'), true);
+		assert.strictEqual(isCssLchString('lch(foo)'), true);
+		assert.strictEqual(isCssLchString('lch(100 50 0 / 0.5)'), true);
 	});
 });
