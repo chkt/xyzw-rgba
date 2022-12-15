@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { describe, it } from 'mocha';
-import { align, angle, angleUnit, clamp, interval, toFixed } from '../source/real';
+import { align, angle, angleUnit, clamp, interval, mean, mid, range, toFixed } from '../source/real';
 import { assertEquals } from './assert/assert';
 
 
@@ -105,6 +105,121 @@ describe('interval', () => {
 		assertEquals(interval(1.25, 2.0, 3.0), 2.25, e);
 		assertEquals(interval(-0.25, -2.0, -3.0), -2.25, e);
 		assertEquals(interval(1.25, -2.0, -3.0), -2.75, e);
+	});
+});
+
+describe('range', () => {
+	const e = 1e-10;
+	const pnf = Number.POSITIVE_INFINITY;
+	const nnf = Number.NEGATIVE_INFINITY;
+	const nan = Number.NaN;
+
+	it('should return the range of an array of numbers', () => {
+		assert.strictEqual(range([]), nan);
+		assert.strictEqual(range([ nan, 2.0, 3.0 ]), nan);
+		assert.strictEqual(range([ 1.0, nan, 3.0 ]), nan);
+		assert.strictEqual(range([ 1.0, 2.0, nan ]), nan);
+		assert.strictEqual(range([ 1.0, pnf ]), pnf);
+		assert.strictEqual(range([ 1.0, nnf ]), pnf);
+		assert.strictEqual(range([ pnf, nnf ]), pnf);
+		assertEquals(range([ 1.0, 2.0, 3.0 ]), 2.0, e);
+		assertEquals(range([ -1.0, 2.0, 3.0 ]), 4.0, e);
+		assertEquals(range([ 1.0, -2.0, 3.0 ]), 5.0, e);
+		assertEquals(range([ 1.0, 2.0, -3.0 ]), 5.0, e);
+		assertEquals(range([ -1.0, -2.0, -3.0 ]), 2.0, e);
+	});
+});
+
+describe('mean', () => {
+	const e = 1e-10;
+	const pnf = Number.POSITIVE_INFINITY;
+	const nnf = Number.NEGATIVE_INFINITY;
+	const nan = Number.NaN;
+
+	it('should return the arithmetic mean of an array of numbers', () => {
+		assert.strictEqual(mean([]), nan);
+		assert.strictEqual(mean([ nan, 2.0, 3.0 ]), nan);
+		assert.strictEqual(mean([ 1.0, nan, 3.0 ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, nan ]), nan);
+		assert.strictEqual(mean([ 1.0, pnf ]), pnf);
+		assert.strictEqual(mean([ pnf, pnf ]), pnf);
+		assert.strictEqual(mean([ 1.0, nnf ]), nnf);
+		assert.strictEqual(mean([ nnf, nnf ]), nnf);
+		assert.strictEqual(mean([ pnf, nnf ]), nan);
+		assert.strictEqual(mean([ pnf, nnf, pnf ]), nan);
+		assertEquals(mean([ 1.0, 2.0 ]), 1.5, e);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ]), 2.0, e);
+		assertEquals(mean([ -1.0, 2.0 ]), 0.5, e);
+		assertEquals(mean([ -1.0, -2.0 ]), -1.5, e);
+	});
+
+	it('should return the weighted mean of an array of numbers', () => {
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], []), 2.0, e);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ nan ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, nan ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, nan ]), nan);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, 1.0, nan ]), 2.0, e);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ pnf ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, pnf ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, pnf ]), nan);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, 1.0, pnf ]), 2.0, e);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ nnf ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, nnf ]), nan);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, nnf ]), nan);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 1.0, 1.0, 1.0, nnf ]), 2.0, e);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 3.0, 2.0, 1.0 ]), 10.0 / 6.0, e);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ -3.0, 2.0, 1.0 ]), pnf);
+		assert.strictEqual(mean([ 1.0, -2.0, 3.0 ], [ -3.0, 2.0, 1.0 ]), nnf);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 3.0, -2.0, 1.0 ]), 2.0 / 2.0, e);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 0.0, 2.0, 1.0 ]), 7.0 / 3.0, e);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 3.0, 0.0, 1.0 ]), 6.0 / 4.0, e);
+		assertEquals(mean([ 1.0, 2.0, 3.0 ], [ 3.0, 2.0, 0.0 ]), 7.0 / 5.0, e);
+		assert.strictEqual(mean([ 1.0, 2.0, 3.0 ], [ 0.0, 0.0, 0.0 ]), nan);
+	});
+});
+
+describe('mid', () => {
+	const e = 1e-10;
+	const pnf = Number.POSITIVE_INFINITY;
+	const nnf = Number.NEGATIVE_INFINITY;
+	const nan = Number.NaN;
+
+	it('should return the midrange of an array of numbers', () => {
+		assert.strictEqual(mid([]), nan);
+		assert.strictEqual(mid([ nan, 2.0, 3.0 ]), nan);
+		assert.strictEqual(mid([ 1.0, nan, 3.0 ]), nan);
+		assert.strictEqual(mid([ 1.0, 2.0, nan ]), nan);
+		assert.strictEqual(mid([ 1.0, pnf ]), pnf);
+		assert.strictEqual(mid([ pnf, pnf ]), pnf);
+		assert.strictEqual(mid([ 1.0, nnf ]), nnf);
+		assert.strictEqual(mid([ nnf, nnf ]), nnf);
+		assert.strictEqual(mid([ pnf, nnf ]), nan);
+		assert.strictEqual(mid([ pnf, nnf, pnf ]), nan);
+		assertEquals(mid([ 1.0, 2.0, 3.0 ]), 2.0, e);
+		assertEquals(mid([ -1.0, 2.0, 3.0 ]), 1.0, e);
+		assertEquals(mid([ 1.0, -2.0, 3.0 ]), 0.5, e);
+		assertEquals(mid([ 1.0, 2.0, -3.0 ]), -0.5, e);
+		assertEquals(mid([ -1.0, -2.0, -3.0 ]), -2.0, e);
+	});
+
+	it('should return the lerp of the extremes of an array of numbers', () => {
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], nan), nan);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], pnf), nan);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], nnf), nan);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], -1.0), -1.0);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 0.0), 1.0);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 0.25), 1.5);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 0.5), 2.0);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 0.75), 2.5);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 1.0), 3.0);
+		assert.strictEqual(mid([ 1.0, 2.0, 3.0 ], 2.0), 5.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], -1.0), -5.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 0.0), -1.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 0.25), 0.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 0.5), 1.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 0.75), 2.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 1.0), 3.0);
+		assert.strictEqual(mid([ -1.0, 2.0, 3.0 ], 2.0), 7.0);
 	});
 });
 

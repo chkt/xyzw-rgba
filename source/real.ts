@@ -11,6 +11,7 @@ export const enum angleUnit {
 }
 
 
+const nan = Number.NaN;
 const minFn = Math.min;
 const maxFn = Math.max;
 
@@ -40,7 +41,9 @@ export function align(n:number, step:number = 1.0, threshold:number = 0.5) : num
 
 
 export function clamp(n:number, a:number, b:number) : number {
-	return minFn(maxFn(n, minFn(a, b)), maxFn(a, b));
+	const min = minFn(a, b);
+
+	return minFn(maxFn(n, min), a + b - min);
 }
 
 export function interval(n:number, a:number, b:number) : number {
@@ -50,6 +53,31 @@ export function interval(n:number, a:number, b:number) : number {
 	const rem = (n - minVal) % diff;
 
 	return rem + (rem < 0.0 ? diff : 0.0) + minVal;
+}
+
+
+export function range(values:readonly number[]) : number {
+	if (values.length > 0) return maxFn(...values) - minFn(...values);
+	else return nan;
+}
+
+export function mean(values:readonly number[], weights:readonly number[] = []) : number {
+	let sum = 0.0;
+	let div = 0.0;
+
+	for (let i = values.length - 1; i > -1; i -= 1) {
+		const w = weights[i] ?? 1.0;
+
+		sum += values[i] * w;
+		div += w;
+	}
+
+	return sum / div;
+}
+
+export function mid(values:readonly number[], t:number = 0.5) : number {
+	if (values.length !== 0) return minFn(...values) * (1.0 - t) + maxFn(...values) * t;
+	else return nan;
 }
 
 
