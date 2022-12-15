@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { describe, it } from 'mocha';
 
 
@@ -62,6 +63,43 @@ describe('mod operation', () => {
 			a %= 3;
 			a += Number(a < 0) * 3;
 		}
+	});
+});
+
+describe('clamping', () => {
+	const num = 10_000_000;
+	const rndfn = Math.random;
+	const minfn = Math.min;
+	const maxfn = Math.max;
+
+	it('should measure the performance of min(a, b), max(a, b))', () => {
+		let r = 0.0;
+
+		for (let i = 0; i < num; i += 1) {
+			const a = rndfn();
+			const b = rndfn();
+			const min = minfn(a, b);
+			const max = maxfn(a, b);
+
+			r += min + max;
+		}
+
+		assert(r);
+	});
+
+	it('should measure the performance of min(a, b), a + b - min', () => {
+		let r = 0.0;
+
+		for (let i = 0; i < num; i += 1) {
+			const a = rndfn();
+			const b = rndfn();
+			const min = minfn(a, b);
+			const max = a + b - min;
+
+			r += min + max;
+		}
+
+		assert(r);
 	});
 });
 
