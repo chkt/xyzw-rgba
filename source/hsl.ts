@@ -1,7 +1,6 @@
 import * as vec3 from 'xyzw/dist/vector3';
-import { angle, angleUnit, toFixed } from './real';
-// eslint-disable-next-line @typescript-eslint/no-shadow
-import { clamp, toString } from './vector3';
+import { ColorSpace, Transfer, identity, linear } from './colorSpace';
+import { Hsla } from './hsla';
 import {
 	CSS2_DELIM, CSS4_DELIM, CSS_MAX_DECIMALS, CSS_PCT, CssHslString, CssOptions,
 	TURN_TO_RAD,
@@ -11,8 +10,9 @@ import {
 	parseCssAngle,
 	parseCssPercent
 } from './parse';
-import { ColorSpace, Transfer, identity, linear } from './colorSpace';
-import { Hsla } from './hsla';
+import { angle, angleUnit, toFixed } from './real';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import { clamp, toString } from './vector3';
 
 
 export interface Hsl {
@@ -43,6 +43,9 @@ export function equals(a:Hsl, b:Hsl, e:number = epsilon) : boolean {
 }
 
 
+/**
+ * C = (1 - |2*clamp(L)-1|)*clamp(S)
+ */
 export function chroma(hsl:Hsl) : number {
 	return (1.0 - abs(2.0 * minfn(maxfn(hsl.lightness, 0.0), 1.0) - 1.0)) * minfn(maxfn(hsl.saturation, 0.0), 1.0);
 }
