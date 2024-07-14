@@ -225,7 +225,7 @@ export function Clamp(v:Vector4, a:number, b:number) : Vector4 {
  */
 export function clamp<R extends Vector4>(r:R, v:Vector4, a:number, b:number) : R {
 	const minVal = minFn(a, b);
-	const maxVal = maxFn(a, b);
+	const maxVal = a + b - minVal;
 
 	[ r.x, r.y, r.z, r.w ] = [
 		minFn(maxFn(v.x, minVal), maxVal),

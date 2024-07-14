@@ -142,7 +142,7 @@ export const max = assign31.bind(null, Math.max) as <R extends Vector3>(r:R, v:V
 
 export function Clamp(v:Vector3, a:number, b:number) : Vector3 {
 	const minVal = minFn(a, b);
-	const maxVal = maxFn(a, b);
+	const maxVal = a + b - minVal;
 
 	return {
 		x : minFn(maxFn(v.x, minVal), maxVal),
@@ -153,7 +153,7 @@ export function Clamp(v:Vector3, a:number, b:number) : Vector3 {
 
 export function clamp<R extends Vector3>(r:R, v:Vector3, a:number, b:number) : R {
 	const minVal = minFn(a, b);
-	const maxVal = maxFn(a, b);
+	const maxVal = a + b - minVal;
 
 	r.x = minFn(maxFn(v.x, minVal), maxVal);
 	r.y = minFn(maxFn(v.y, minVal), maxVal);
