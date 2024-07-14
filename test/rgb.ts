@@ -6,16 +6,231 @@ import {
 	CssRgb,
 	Hex24,
 	Uint24,
+	chroma,
 	cssRgb,
+	hSi,
+	hSl,
+	hSv,
 	hex24,
+	hsI,
+	hsL,
+	hsV,
+	hue,
+	luma,
 	toCss,
 	toHex24,
 	toUint24,
 	uint24
 } from '../source/rgb';
-import { assertEqualsVec3 } from './assert/assert';
+import { assertEquals, assertEqualsVec3 } from './assert/assert';
 import { createColorSpace } from './mock/colorSpace';
 
+
+describe('chroma', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the chromacity of an rgb64', () => {
+		assertEquals(chroma({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(chroma({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(chroma({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(chroma({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(chroma({ x : 0.5, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(chroma({ x : 1.0, y : 1.0, z : 1.0 }), 0.0, e);
+		assertEquals(chroma({ x : 1.0, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(chroma({ x : 1.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(chroma({ x : 0.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(chroma({ x : 0.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(chroma({ x : 0.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(chroma({ x : 1.0, 	y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(chroma({ x : 0.5, y : 0.75, z : 0.75 }), 0.25, e);
+		assertEquals(chroma({ x : 0.5, y : 0.5, z : 0.75 }), 0.25, e);
+		assertEquals(chroma({ x : 0.75, y : 0.5, z : 0.75 }), 0.25, e);
+		assertEquals(chroma({ x : 0.75, y : 0.5, z : 0.5 }), 0.25, e);
+		assertEquals(chroma({ x : 0.75, y : 0.75, z : 0.5 }), 0.25, e);
+		assertEquals(chroma({ x : 0.5, y : 0.75, z : 0.5 }), 0.25, e);
+	});
+});
+
+describe('hue', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+	const turn = Math.PI * 2.0;
+
+	it('should return the hue of an rgb64', () => {
+		assertEquals(hue({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hue({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hue({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hue({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hue({ x : 0.5, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(hue({ x : 1.0, y : 1.0, z : 1.0 }), 0.0, e);
+		assertEquals(hue({ x : 1.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hue({ x : 1.0, y : 1.0, z : 0.0 }), turn / 6.0, e);
+		assertEquals(hue({ x : 0.0, y : 1.0, z : 0.0 }), turn * 2.0 / 6.0, e);
+		assertEquals(hue({ x : 0.0, y : 1.0, z : 1.0 }), turn * 3.0 / 6.0, e);
+		assertEquals(hue({ x : 0.0, y : 0.0, z : 1.0 }), turn * 4.0 / 6.0, e);
+		assertEquals(hue({ x : 1.0, y : 0.0, z : 1.0 }), turn * 5.0 / 6.0, e);
+		assertEquals(hue({ x : 0.75, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(hue({ x : 0.75, y : 0.75, z : 0.5 }), turn / 6.0, e);
+		assertEquals(hue({ x : 0.5, y : 0.75, z : 0.5 }), turn * 2.0 / 6.0, e);
+		assertEquals(hue({ x : 0.5, y : 0.75, z : 0.75 }), turn * 3.0 / 6.0, e);
+		assertEquals(hue({ x : 0.5, y : 0.5, z : 0.75 }), turn * 4.0 / 6.0, e);
+		assertEquals(hue({ x : 0.75, y : 0.5, z : 0.75 }), turn * 5.0 / 6.0, e);
+	});
+});
+
+describe('hSl', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the hsl saturation of an rgb64', () => {
+		assertEquals(hSl({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hSl({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hSl({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hSl({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hSl({ x : 0.5, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(hSl({ x : 1.0, y : 1.0, z : 1.0 }), 0.0, e);
+		assertEquals(hSl({ x : 1.0, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSl({ x : 1.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSl({ x : 0.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSl({ x : 0.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSl({ x : 0.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSl({ x : 1.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSl({ x : 1.0, y : 0.5, z : 0.5 }), 1.0, e);
+		assertEquals(hSl({ x : 0.75, y : 0.25, z : 0.25 }), 0.5, e);
+		assertEquals(hSl({ x : 0.5, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSl({ x : 1.0, y : 0.75, z : 0.75 }), 1.0, e);
+		assertEquals(hSl({ x : 0.75, y : 0.5, z : 0.5 }), 1.0 / 3.0, e);
+		assertEquals(hSl({ x : 0.5, y : 0.25, z : 0.25 }), 1.0 / 3.0, e);
+	});
+});
+
+describe('hSv', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the hsv saturation of an rgb64', () => {
+		assertEquals(hSv({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hSv({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hSv({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hSv({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hSv({ x : 0.5, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(hSv({ x : 1.0, y : 1.0, z : 1.0 }), 0.0, e);
+		assertEquals(hSv({ x : 1.0, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSv({ x : 1.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSv({ x : 0.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSv({ x : 0.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSv({ x : 0.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSv({ x : 1.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSv({ x : 1.0, y : 0.5, z : 0.5 }), 0.5, e);
+		assertEquals(hSv({ x : 0.75, y : 0.25, z : 0.25 }), 2.0 / 3.0, e);
+		assertEquals(hSv({ x : 0.5, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSv({ x : 1.0, y : 0.75, z : 0.75 }), 1.0 / 4.0, e);
+		assertEquals(hSv({ x : 0.75, y : 0.5, z : 0.5 }), 1.0 / 3.0, e);
+		assertEquals(hSv({ x : 0.5, y : 0.25, z : 0.25 }), 1.0 / 2.0, e);
+	});
+});
+
+describe('hSi', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the hsi intensity of an rgb64', () => {
+		assertEquals(hSi({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hSi({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hSi({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hSi({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hSi({ x : 0.5, y : 0.5, z : 0.5 }), 0.0, e);
+		assertEquals(hSi({ x : 1.0, y : 1.0, z : 1.0 }), 0.0, e);
+		assertEquals(hSi({ x : 1.0, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSi({ x : 1.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSi({ x : 0.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSi({ x : 0.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSi({ x : 0.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSi({ x : 1.0, y : 0.0, z : 1.0 }), 1.0, e);
+		assertEquals(hSi({ x : 1.0, y : 0.5, z : 0.5 }), 0.25, e);
+		assertEquals(hSi({ x : 0.75, y : 0.25, z : 0.25 }), 0.4, e);
+		assertEquals(hSi({ x : 0.5, y : 0.0, z : 0.0 }), 1.0, e);
+		assertEquals(hSi({ x : 1.0, y : 0.75, z : 0.75 }), 0.1, e);
+		assertEquals(hSi({ x : 0.75, y : 0.5, z : 0.5 }), 1.0 / 7.0, e);
+		assertEquals(hSi({ x : 0.5, y : 0.25, z : 0.25 }), 0.25, e);
+	});
+});
+
+describe('hsL', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the hsl lightness of an rgb64', () => {
+		assertEquals(hsL({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hsL({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hsL({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hsL({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hsL({ x : 0.5, y : 0.5, z : 0.5 }), 0.5, e);
+		assertEquals(hsL({ x : 1.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(hsL({ x : 1.0, y : 1.0, z : 0.0 }), 0.5, e);
+		assertEquals(hsL({ x : 0.5, y : 0.3, z : 0.3 }), 0.4, e);
+	});
+});
+
+describe('hsV', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return hsv value of an rgb64', () => {
+		assertEquals(hsV({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hsV({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hsV({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hsV({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hsV({ x : 0.5, y : 0.5, z : 0.5 }), 0.5, e);
+		assertEquals(hsV({ x : 1.0, y : 1.0, z : 0.0 }), 1.0, e);
+		assertEquals(hsV({ x : 0.5, y : 0.3, z : 0.3 }), 0.5, e);
+	});
+});
+
+describe('hsI', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the hsi intensity of an rgb64', () => {
+		assertEquals(hsI({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(hsI({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(hsI({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(hsI({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(hsI({ x : 0.5, y : 0.5, z : 0.5 }), 0.5, e);
+		assertEquals(hsI({ x : 1.0, y : 1.0, z : 0.0 }), 2.0 / 3.0, e);
+		assertEquals(hsI({ x : 0.5, y : 0.3, z : 0.3 }), 1.1 / 3.0, e);
+	});
+});
+
+describe('luma', () => {
+	const e = 1e-10;
+	const nan = Number.NaN;
+
+	it('should return the luma of an rgba64 in Y709 colorspace', () => {
+		assertEquals(luma({ x : nan, y : 0.0, z : 0.0 }), nan, e);
+		assertEquals(luma({ x : 0.0, y : nan, z : 0.0 }), nan, e);
+		assertEquals(luma({ x : 0.0, y : 0.0, z : nan }), nan, e);
+		assertEquals(luma({ x : 1.0, y : 1.0, z : 1.0 }), 1.0, e);
+		assertEquals(luma({ x : 0.5, y : 0.5, z : 0.5 }), 0.5, e);
+		assertEquals(luma({ x : 0.0, y : 0.0, z : 0.0 }), 0.0, e);
+		assertEquals(luma({ x : 1.0, y : 1.0, z : 0.0 }), 1.0 * 0.2126 + 1.0 * 0.7152 + 0.0 * 0.0722, e);
+		assertEquals(luma({ x : 0.5, y : 0.3, z : 0.3 }), 0.5 * 0.2126 + 0.3 * 0.7152 + 0.3 * 0.0722, e);
+	});
+
+	it('should return the luma of an rgba64 in an arbitrary colorspace', () => {
+		const y601 = { x : 0.2989, y : 0.5870, z : 0.1140 };
+
+		assertEquals(luma({ x : 0.0, y : 0.0, z : 0.0 }, { x : nan, y : 0.5, z : 0.5 }), nan, e);
+		assertEquals(luma({ x : 0.0, y : 0.0, z : 0.0 }, { x : 0.5, y : nan, z : 0.5 }), nan, e);
+		assertEquals(luma({ x : 0.0, y : 0.0, z : 0.0 }, { x : 0.5, y : 0.5, z : nan }), nan, e);
+		assertEquals(luma({ x : 0.0, y : 0.0, z : 0.0 }, y601), 0.0, e);
+		assertEquals(luma({ x : 0.5, y : 0.5, z : 0.5 }, y601), 0.49995, e);
+		assertEquals(luma({ x : 1.0, y : 1.0, z : 1.0 }, y601), 0.9999, e);
+		assertEquals(luma({ x : 1.0, y : 1.0, z : 0.0 }, y601), y601.x + y601.y, e);
+		assertEquals(luma({ x : 0.5, y : 0.3, z : 0.3 }, y601), 0.5 * y601.x + 0.3 * y601.y + 0.3 * y601.z, e);
+	});
+});
 
 describe('Hex24', () => {
 	const e = 1e-10;

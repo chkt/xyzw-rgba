@@ -1,7 +1,5 @@
-import { Create, Vector3, clampScalar, multiplyAssignScalar } from 'xyzw/dist/vector3';
-import { toFixed } from './real';
-// eslint-disable-next-line @typescript-eslint/no-shadow
-import { align, round, toString } from './vector3';
+import { Create, Vector3, hadamard, multiplyAssignScalar } from 'xyzw/dist/vector3';
+import { ColorSpace, linear } from './colorSpace';
 import {
 	CSS2_DELIM,
 	CSS4_DELIM,
@@ -21,12 +19,114 @@ import {
 	hexDefaults,
 	parseCssUint8
 } from './parse';
-import { ColorSpace, linear } from './colorSpace';
+import { toFixed } from './real';
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import { align, clamp, round, toString } from './vector3';
 
 
 const EXPR_HASH24 = /^#?(?<hex>[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+const HALF = 0.5;
+const ONE_THIRD = 1.0 / 3.0;
+const SIXTH_TURN = Math.PI / 3.0;
+const Y709 = Create(0.2126, 0.7152, 0.0722);
+
+const absfn = Math.abs;
+const maxfn = Math.max;
+const minfn = Math.min;
 
 const v = Create();
+
+
+/**
+ * C = max(r,g,b) - min(r,g,b)
+ */
+export function chroma(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+
+	return maxfn(x, y, z) - minfn(x, y, z);
+}
+
+
+export function hue(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+	const max = maxfn(x, y, z);
+	const c = max - minfn(x, y, z);
+
+	if (c === 0.0) return 0.0;
+	else if (max === x) return ((y - z) / c + 6.0) % 6.0 * SIXTH_TURN;
+	else if (max === y) return ((z - x) / c + 2.0) * SIXTH_TURN;
+	else return ((x - y) / c + 4.0) * SIXTH_TURN;
+}
+
+/**
+ * S = C/(1 - |2L-1|)
+ */
+export function hSl(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+	const min = minfn(x, y, z), max = maxfn(x, y, z);
+	const l = 1.0 - absfn(max + min - 1.0);
+
+	if (l !== 0.0) return (max - min) / l;
+	else return 0.0;
+}
+
+/**
+ * S = C/V
+ */
+export function hSv(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+	const max = maxfn(x, y, z);
+
+	if (max !== 0.0) return (max - minfn(x, y, z)) / max;
+	else return 0.0;
+}
+
+/**
+ * S = 1 - min(r,g,b)/I
+ */
+export function hSi(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+	const i = (x + y + z) * ONE_THIRD;
+
+	if (i !== 0.0) return 1.0 - minfn(x, y, z) / i;
+	else return 0.0;
+}
+
+/**
+ * L = mean(max(r,g,b), min(r,g,b))
+ */
+export function hsL(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+
+	return (maxfn(x, y, z) + minfn(x, y, z)) * HALF;
+}
+
+/**
+ * V = max(r,g,b)
+ */
+export function hsV(rgb64:Vector3) : number {
+	const { x, y, z } = rgb64;
+
+	return maxfn(x, y, z);
+}
+
+/**
+ * I = mean(r,g,b)
+ */
+export function hsI(rgba64:Vector3) : number {
+	const { x, y, z } = rgba64;
+
+	return (x + y + z) * ONE_THIRD;
+}
+
+/**
+ * Y' = RᵤRᵥ + GᵤGᵥ + BᵤBᵥ
+ */
+export function luma(rgb64:Vector3, coefficient:Vector3 = Y709) : number {
+	const { x, y, z } = hadamard(v, rgb64, coefficient);
+
+	return x + y + z;
+}
 
 
 export function Hex24(value:string, profile?:ColorSpace) : Vector3 {
@@ -132,7 +232,7 @@ export function toCss(rgb64:Vector3, profile:ColorSpace = linear, opts?:Partial<
 			digits = 1;
 		}
 
-		clampScalar(v, v, 0.0, UNIT_TO_PCT);
+		clamp(v, v, 0.0, UNIT_TO_PCT);
 	}
 	else {
 		multiplyAssignScalar(v, UNIT_TO_UINT8);
@@ -143,7 +243,7 @@ export function toCss(rgb64:Vector3, profile:ColorSpace = linear, opts?:Partial<
 			digits = 0;
 		}
 
-		clampScalar(v, v, 0.0, UNIT_TO_UINT8);
+		clamp(v, v, 0.0, UNIT_TO_UINT8);
 	}
 
 	return `rgb(${
