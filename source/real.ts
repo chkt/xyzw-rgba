@@ -39,6 +39,40 @@ export function align(n:number, step:number = 1.0, threshold:number = 0.5) : num
 	return n + (rem >= step * threshold ? step : 0.0) - rem;
 }
 
+/**
+ * |a| = |b|
+ */
+export function isAbsEq(a:number, b:number) : boolean {
+	return a ** 2 === b ** 2;
+}
+
+/**
+ * |a| < |b|
+ */
+export function isAbsLt(a:number, b:number) : boolean {
+	return a ** 2 < b ** 2;
+}
+
+/**
+ * |a| ≤ |b|
+ */
+export function isAbsLtEq(a:number, b:number) : boolean {
+	return a ** 2 <= b ** 2;
+}
+
+/**
+ * |a| > |b|
+ */
+export function isAbsGt(a:number, b:number) : boolean {
+	return a ** 2 > b ** 2;
+}
+
+/**
+ * |a| ≥ |b|
+ */
+export function isAbsGtEq(a:number, b:number) : boolean {
+	return a ** 2 >= b ** 2;
+}
 
 export function clamp(n:number, a:number, b:number) : number {
 	const min = minFn(a, b);
@@ -80,6 +114,14 @@ export function mid(values:readonly number[], t:number = 0.5) : number {
 	else return nan;
 }
 
+export function relative(values:readonly number[], n:number) : number {
+	const minVal = minFn(...values);
+	const maxVal = maxFn(...values);
+
+	if (!Number.isFinite(minVal)) return 1.0 - (maxVal - n) / (maxVal - minVal);
+	else if (!Number.isFinite(maxVal)) return Math.abs((n - minVal) / (maxVal - minVal));
+	else return (n - minVal) / (maxVal - minVal);
+}
 
 export function toFixed(n:number, max:number = 0) : string {
 	const s = n.toFixed(max);
